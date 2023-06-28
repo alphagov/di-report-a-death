@@ -1,0 +1,15 @@
+{
+  "name": "base_dependencies",
+  "version": "1.0.0",
+  "description": "",
+  "license": "MIT",
+  "scripts": {
+    "build-sass": "rm -rf ../assets/public/style.css && sass --load-path=node_modules/govuk-frontend/govuk --no-source-map --quiet-deps ../styles/application.scss ../assets/public/styles.css --style compressed"
+  },
+  "dependencies": {
+    "govuk-frontend": "^4.6.0",
+    "sass": "^1.63.6"
+  },
+  "devDependencies": {
+  }
+}
