@@ -1,6 +1,46 @@
+{% from "govuk/components/radios/macro.njk" import govukRadios %}
+{% from "govuk/components/button/macro.njk" import govukButton %}
+
 {% extends "base.njk" %}
 
 {% block content %}
 <h1 class="govuk-heading-xl">Hello</h1>
+    <p class="govuk-body">Session ID: {{ sessionId }}</p>
 <a href="/world" class="govuk-link">next</a>
+    <form action="/hello" method="post">
+        {{ govukRadios({
+            name: "where-do-you-live",
+            value: answer,
+            fieldset: {
+                legend: {
+                    text: "Where do you live?",
+                    isPageHeading: true,
+                    classes: "govuk-fieldset__legend--l"
+                }
+            },
+            items: [
+                {
+                    value: "england",
+                    text: "England"
+                },
+                {
+                    value: "scotland",
+                    text: "Scotland"
+                },
+                {
+                    value: "wales",
+                    text: "Wales"
+                },
+                {
+                    value: "northern-ireland",
+                    text: "Northern Ireland"
+                }
+            ]
+        }) }}
+
+        {{ govukButton({
+            text: "Confirm and send",
+            preventDoubleClick: true
+        }) }}
+    </form>
 {% endblock %}
