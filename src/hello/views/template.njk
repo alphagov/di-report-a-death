@@ -6,8 +6,8 @@
 {% block content %}
 <h1 class="govuk-heading-xl">Hello</h1>
     <p class="govuk-body">Session ID: {{ sessionId }}</p>
-<a href="/world" class="govuk-link">next</a>
-    <form action="/hello" method="post">
+<a href="world" class="govuk-link">next</a>
+    <form action="hello" method="post">
         {{ govukRadios({
             name: "where-do-you-live",
             value: answer,

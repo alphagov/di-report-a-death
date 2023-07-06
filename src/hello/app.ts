@@ -52,8 +52,8 @@ const post = (event: APIGatewayProxyEvent): APIGatewayProxyResult => {
         return {
             statusCode: 303,
             headers: {
-                "location": "/hello",
-                "set-cookie": `answer=${answer}`
+                "location": "hello",
+                "set-cookie": `answer=${answer}; Secure; HttpOnly`
             },
             body: ""
         };
