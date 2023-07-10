@@ -56,10 +56,6 @@ describe('Unit test for app handler', function () {
         const result: APIGatewayProxyResult = await lambdaHandler(event);
 
         expect(result.statusCode).toEqual(200);
-        expect(result.body).toEqual(
-            JSON.stringify({
-                message: 'hello world',
-            }),
-        );
+        expect(result.headers && result.headers['Content-Type']).toEqual('text/html');
     });
 });

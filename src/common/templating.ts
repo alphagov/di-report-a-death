@@ -18,7 +18,7 @@ export function renderAsHtmlResponse(
 }
 
 function render(templateName: string, templateVars: object, event: APIGatewayProxyEvent): string {
-    const nunjucks = configure(['.', 'node_modules/govuk-frontend/']);
+    const nunjucks = configure(['.', './common/templates', '../../node_modules/govuk-frontend/']);
 
     nunjucks.addGlobal('assetPath', process.env.ASSET_PATH);
 

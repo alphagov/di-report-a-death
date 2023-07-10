@@ -3,15 +3,16 @@ import { getSessionId } from './common/cookie';
 import { renderAsHtmlResponse } from './common/templating';
 
 export const lambdaHandler = async (event: APIGatewayProxyEvent): Promise<APIGatewayProxyResult> => {
-    if (event.httpMethod === 'GET') {
+    const method = event.httpMethod.toUpperCase();
+    if (method === 'GET') {
         return get(event);
-    } else if (event.httpMethod == 'POST') {
+    } else if (method == 'POST') {
         return post(event);
     } else {
         return {
             statusCode: 405,
             body: JSON.stringify({
-                message: 'Method not allowed: ' + event.httpMethod,
+                message: 'Method not allowed: ' + method,
             }),
         };
     }

@@ -22,7 +22,7 @@ function ensureDirExists(path) {
 
 function copyTemplates(funDirs) {
     funDirs.forEach(path => {
-        fs.copyFileSync(`src/pages/${path}/views/template.njk`, `${srcToBuild(path)}/template.njk`)
+        fs.copyFileSync(`src/pages/${path}/template.njk`, `${srcToBuild(path)}/template.njk`)
     })
 }
 
