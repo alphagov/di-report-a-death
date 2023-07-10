@@ -9,9 +9,9 @@ copyGovuk(buildDirs)
 
 
 function getFunctionDirs() {
-    const dirListing = fs.readdirSync(".")
-    const listOfDirs = dirListing.filter(path => fs.statSync(path).isDirectory())
-    return listOfDirs.filter(path => fs.readdirSync(path).includes("app.ts"))
+    const dirListing = fs.readdirSync("src/pages")
+    const listOfDirs = dirListing.filter(path => fs.statSync(`src/pages/${path}`).isDirectory())
+    return listOfDirs.filter(path => fs.readdirSync(`src/pages/${path}`).includes("app.ts"))
 }
 
 function ensureDirExists(path) {
@@ -22,20 +22,20 @@ function ensureDirExists(path) {
 
 function copyTemplates(funDirs) {
     funDirs.forEach(path => {
-        fs.copyFileSync(`${path}/views/template.njk`, `${srcToBuild(path)}/template.njk`)
+        fs.copyFileSync(`src/pages/${path}/views/template.njk`, `${srcToBuild(path)}/template.njk`)
     })
 }
 
 function copyBaseTemplate(buildDirs) {
     buildDirs.forEach(path => {
-        fs.copyFileSync("./templates/base.njk", `${path}/base.njk`)
+        fs.cpSync("src/common/templates", path, {recursive: true})
     })
 }
 
 function copyGovuk(buildDirs) {
     buildDirs.forEach(path => {
         fs.cpSync(
-            `build-deps/node_modules/govuk-frontend/govuk`,
+            `src/build-deps/node_modules/govuk-frontend/govuk`,
             `${path}/govuk`,
             {recursive: true}
         )
@@ -43,7 +43,7 @@ function copyGovuk(buildDirs) {
 }
 
 function srcToBuild(dirName) {
-    return `./.aws-sam/build/${toPascalCase(dirName)}Function`
+    return `.aws-sam/build/${toPascalCase(dirName)}Function`
 }
 
 function toPascalCase(text) {

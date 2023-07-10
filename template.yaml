@@ -19,7 +19,7 @@ Resources:
   HelloFunction:
     Type: AWS::Serverless::Function # More info about Function Resource: https://github.com/awslabs/serverless-application-model/blob/master/versions/2016-10-31.md#awsserverlessfunction
     Properties:
-      CodeUri: hello/
+      CodeUri: src/pages/hello/
       Handler: app.lambdaHandler
       Runtime: nodejs18.x
       Architectures:
@@ -46,7 +46,7 @@ Resources:
   WorldFunction:
     Type: AWS::Serverless::Function # More info about Function Resource: https://github.com/awslabs/serverless-application-model/blob/master/versions/2016-10-31.md#awsserverlessfunction
     Properties:
-      CodeUri: world/
+      CodeUri: src/pages/world/
       Handler: app.lambdaHandler
       Runtime: nodejs18.x
       Architectures:
