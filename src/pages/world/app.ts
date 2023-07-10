@@ -1,5 +1,5 @@
-import {APIGatewayProxyEvent, APIGatewayProxyResult} from 'aws-lambda';
-import {renderAsHtmlResponse} from "./common/templating";
+import { APIGatewayProxyEvent, APIGatewayProxyResult } from 'aws-lambda';
+import { renderAsHtmlResponse } from './common/templating';
 
 /**
  *
@@ -11,10 +11,9 @@ import {renderAsHtmlResponse} from "./common/templating";
  *
  */
 
-
 export const lambdaHandler = async (event: APIGatewayProxyEvent): Promise<APIGatewayProxyResult> => {
     try {
-        return renderAsHtmlResponse(event, "template.njk")
+        return renderAsHtmlResponse(event, 'template.njk');
     } catch (err) {
         console.log(err);
         return {

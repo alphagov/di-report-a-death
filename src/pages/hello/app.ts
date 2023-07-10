@@ -1,28 +1,27 @@
-import {APIGatewayProxyEvent, APIGatewayProxyResult} from 'aws-lambda';
-import {getSessionId} from "./common/cookie";
-import {renderAsHtmlResponse} from "./common/templating";
+import { APIGatewayProxyEvent, APIGatewayProxyResult } from 'aws-lambda';
+import { getSessionId } from './common/cookie';
+import { renderAsHtmlResponse } from './common/templating';
 
 export const lambdaHandler = async (event: APIGatewayProxyEvent): Promise<APIGatewayProxyResult> => {
-    if (event.httpMethod === "GET") {
-        return get(event)
-    } else if (event.httpMethod == "POST") {
-        return post(event)
+    if (event.httpMethod === 'GET') {
+        return get(event);
+    } else if (event.httpMethod == 'POST') {
+        return post(event);
     } else {
         return {
             statusCode: 405,
             body: JSON.stringify({
-                message: "Method not allowed: " + event.httpMethod
-            })
-        }
+                message: 'Method not allowed: ' + event.httpMethod,
+            }),
+        };
     }
 };
 
-
 const get = (event: APIGatewayProxyEvent): APIGatewayProxyResult => {
-    const cookies = event.headers["Cookie"]
+    const cookies = event.headers['Cookie'];
     const sessionId = getSessionId(cookies);
     try {
-        return renderAsHtmlResponse(event, "template.njk", {sessionId: "static-value", answer: "scotland"})
+        return renderAsHtmlResponse(event, 'template.njk', { sessionId: 'static-value', answer: 'scotland' });
     } catch (err) {
         console.log(err);
         return {
@@ -32,18 +31,18 @@ const get = (event: APIGatewayProxyEvent): APIGatewayProxyResult => {
             }),
         };
     }
-}
+};
 
 const post = (event: APIGatewayProxyEvent): APIGatewayProxyResult => {
-    const answer = event.body?.split("=")[1]
+    const answer = event.body?.split('=')[1];
     try {
         return {
             statusCode: 303,
             headers: {
-                "location": "hello",
-                "set-cookie": `answer=${answer}; Secure; HttpOnly`
+                location: 'hello',
+                'set-cookie': `answer=${answer}; Secure; HttpOnly`,
             },
-            body: ""
+            body: '',
         };
     } catch (err) {
         console.log(err);
@@ -54,4 +53,4 @@ const post = (event: APIGatewayProxyEvent): APIGatewayProxyResult => {
             }),
         };
     }
-}
+};
