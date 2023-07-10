@@ -9,6 +9,9 @@ Description: >
 Globals:
   Function:
     Timeout: 3
+    Environment:
+      Variables:
+        ASSET_PATH: "/Prod/public"
 
     Tracing: Active
   Api:

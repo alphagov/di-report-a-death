@@ -3,10 +3,8 @@
 {% from "govuk/components/phase-banner/macro.njk" import govukPhaseBanner %}
 {% from "govuk/components/back-link/macro.njk" import govukBackLink %}
 
-{% set assetPath="/Prod/public" %}
-
 {% block head %}
-    <link href="/Prod/public/styles.css" rel="stylesheet">
+    <link href="{{assetPath}}/styles.css" rel="stylesheet">
 {% endblock %}
 
 {% block header %}
@@ -47,7 +45,7 @@
 {% endblock %}
 
 {% block bodyEnd %}
-    <script src="/Prod/public/all.js"></script>
+    <script src="{{assetPath}}/all.js"></script>
     <script>
         window.GOVUKFrontend.initAll()
     </script>

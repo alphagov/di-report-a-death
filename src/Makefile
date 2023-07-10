@@ -9,16 +9,16 @@ clean-assets:
 	rm -rf assets
 
 fonts:
-	mkdir -p assets/Prod/public
-	cp -r build-deps/node_modules/govuk-frontend/govuk/assets/fonts assets/Prod/public/fonts
+	mkdir -p assets/public
+	cp -r build-deps/node_modules/govuk-frontend/govuk/assets/fonts assets/public/fonts
 
 images:
-	mkdir -p assets/Prod/public
-	cp -r build-deps/node_modules/govuk-frontend/govuk/assets/images assets/Prod/public/images
+	mkdir -p assets/public
+	cp -r build-deps/node_modules/govuk-frontend/govuk/assets/images assets/public/images
 
 js:
-	mkdir -p assets/Prod/public
-	cp build-deps/node_modules/govuk-frontend/govuk/all.js assets/Prod/public/all.js
+	mkdir -p assets/public
+	cp build-deps/node_modules/govuk-frontend/govuk/all.js assets/public/all.js
 
 sass:
 	cd build-deps; npm run build-sass

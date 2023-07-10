@@ -1,6 +1,5 @@
 import {APIGatewayProxyEvent, APIGatewayProxyResult} from 'aws-lambda';
-import * as nunjucks from "nunjucks"
-import fs from "fs"
+import {renderAsHtmlResponse} from "./common/templating";
 
 /**
  *
@@ -12,16 +11,10 @@ import fs from "fs"
  *
  */
 
-nunjucks.configure([".", "node_modules/govuk-frontend/"], {autoescape: true})
 
 export const lambdaHandler = async (event: APIGatewayProxyEvent): Promise<APIGatewayProxyResult> => {
-    console.log(fs.readdirSync("."))
     try {
-        return {
-            statusCode: 200,
-            headers: {"content-type": "text/html"},
-            body: nunjucks.render("template.njk"),
-        };
+        return renderAsHtmlResponse(event, "template.njk")
     } catch (err) {
         console.log(err);
         return {
