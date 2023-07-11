@@ -36,5 +36,5 @@ make deploy
 ```
 
 ## Adding a page
-- Copy an existing page
+- Copy an existing page. Make sure to use `cp -a` to preserve the symlink to common
 - Change the package name in package.json
