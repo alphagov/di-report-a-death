@@ -4,6 +4,7 @@
 First time setup:
 - Install latest Node (nvm suggested)
 - Install AWS SAM CLI (`brew install aws-sam-cli`)
+- Install jq (used by scripts/upload-assets.sh, `brew install jq`)
 
 ```shell
 cd src
@@ -26,6 +27,12 @@ Lint:
 ```shell
 cd src
 npm run lint
+```
+
+## Deploy to dev
+With valid AWS credentials:
+```shell
+make deploy
 ```
 
 ## Adding a page

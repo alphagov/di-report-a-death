@@ -5,6 +5,15 @@ Description: >
 
   Sample SAM Template for rad
 
+Parameters:
+  Environment:
+    Type: String
+    Default: dev
+    AllowedValues:
+      - dev
+  CommitHash:
+    Type: String
+
 # More info about Globals: https://github.com/awslabs/serverless-application-model/blob/master/docs/globals.rst
 Globals:
   Function:
@@ -12,10 +21,61 @@ Globals:
     Tracing: Active
     Environment:
       Variables:
-        ASSET_PATH: /Prod/public
+        ASSET_PATH: !Sub "https://${AssetDistribution.DomainName}/${CommitHash}"
   Api:
     TracingEnabled: true
 Resources:
+  AssetBucket:
+    Type: AWS::S3::Bucket
+    Properties:
+      CorsConfiguration:
+        CorsRules:
+          - AllowedMethods:
+              - GET
+            AllowedOrigins:
+              - '*'
+
+  AssetBucketPolicy:
+    Type: AWS::S3::BucketPolicy
+    Properties:
+      Bucket: !Ref AssetBucket
+      PolicyDocument:
+        Version: 2012-10-17
+        Statement:
+            - Action:
+              - 's3:GetObject'
+              Effect: Allow
+              Resource: !Sub "${AssetBucket.Arn}/*"
+              Principal:
+                Service: "cloudfront.amazonaws.com"
+              Condition:
+                StringEquals:
+                  "AWS:SourceArn": !Sub "arn:aws:cloudfront::${AWS::AccountId}:distribution/${AssetDistribution}"
+  AssetDistribution:
+    Type: AWS::CloudFront::Distribution
+    Properties:
+      DistributionConfig:
+        Enabled: true
+        PriceClass: PriceClass_100
+        Origins:
+          - DomainName: !GetAtt AssetBucket.RegionalDomainName
+            Id: s3-assets
+            OriginAccessControlId: !GetAtt AssetDistributionOriginAccessControl.Id
+            S3OriginConfig:
+              OriginAccessIdentity: ""
+        DefaultCacheBehavior:
+          CachePolicyId: 4135ea2d-6df8-44a3-9df3-4b5a84be39ad # Cache disabled managed policy
+          ViewerProtocolPolicy: https-only
+          TargetOriginId: s3-assets
+  AssetDistributionOriginAccessControl:
+    Type: AWS::CloudFront::OriginAccessControl
+    Properties:
+      OriginAccessControlConfig:
+        Name: s3-assets
+        OriginAccessControlOriginType: s3
+        SigningBehavior: always
+        SigningProtocol: sigv4
+
   HelloFunction:
     Type: AWS::Serverless::Function # More info about Function Resource: https://github.com/awslabs/serverless-application-model/blob/master/versions/2016-10-31.md#awsserverlessfunction
     Properties:
@@ -92,3 +152,5 @@ Outputs:
   HelloWorldFunctionIamRole:
     Description: Implicit IAM Role created for Hello World function
     Value: !GetAtt HelloFunctionRole.Arn
+  AssetBucketName:
+    Value: !Ref AssetBucket

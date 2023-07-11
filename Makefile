@@ -29,4 +29,10 @@ es-build:
 templates: FORCE
 	node scripts/package-templates.js
 
+upload-assets: FORCE
+	scripts/upload-assets.sh
+
+deploy: all upload-assets
+	sam deploy --parameter-overrides CommitHash=$$(git rev-parse HEAD)
+
 FORCE: ;
