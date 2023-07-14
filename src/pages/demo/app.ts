@@ -1,6 +1,6 @@
-import { APIGatewayProxyEvent, APIGatewayProxyResult } from 'aws-lambda';
-import { getSessionId } from './common/cookie';
-import { renderAsHtmlResponse } from './common/templating';
+import {APIGatewayProxyEvent, APIGatewayProxyResult} from 'aws-lambda';
+import {renderAsHtmlResponse} from './common/templating';
+import {getSession} from "./common/session";
 
 export const lambdaHandler = async (event: APIGatewayProxyEvent): Promise<APIGatewayProxyResult> => {
     const method = event.httpMethod.toUpperCase();
@@ -18,11 +18,14 @@ export const lambdaHandler = async (event: APIGatewayProxyEvent): Promise<APIGat
     }
 };
 
-const get = (event: APIGatewayProxyEvent): APIGatewayProxyResult => {
-    const cookies = event.headers['Cookie'];
-    const sessionId = getSessionId(cookies);
+const get = async (event: APIGatewayProxyEvent): Promise<APIGatewayProxyResult> => {
+    const session = await getSession(event)
     try {
-        return renderAsHtmlResponse(event, 'template.njk', { sessionId: 'static-value', answer: 'scotland' });
+        return renderAsHtmlResponse(
+            event,
+            'template.njk',
+            { session: JSON.stringify(session), answer: 'scotland' }
+        );
     } catch (err) {
         console.log(err);
         return {

@@ -16,7 +16,7 @@ Parameters:
 
 Globals:
   Function:
-    Timeout: 3
+    Timeout: 15
     Tracing: Active
     Environment:
       Variables:
@@ -127,6 +127,14 @@ Resources:
         - app.ts
   DemoFunction:
     Type: AWS::Serverless::Function
+    Connectors:
+      SessionTable:
+        Properties:
+          Destination:
+            Id: SessionTable
+          Permissions:
+            - Read
+            - Write
     Properties:
       CodeUri: src/pages/demo/
       Handler: app.lambdaHandler
@@ -144,6 +152,8 @@ Resources:
       BuildProperties:
         Minify: true
         Target: es2020
+        External:
+        - "@aws-sdk/client-dynamodb"
         Sourcemap: true
         EntryPoints:
         - app.ts

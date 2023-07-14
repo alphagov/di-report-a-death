@@ -8,5 +8,8 @@
     "@types/jest": "^29.2.0",
     "@types/node": "^18.11.4",
     "@types/nunjucks": "^3.2.2"
+  },
+  "dependencies": {
+    "@aws-sdk/client-dynamodb": "^3.369.0"
   }
 }
