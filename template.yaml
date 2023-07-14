@@ -34,7 +34,6 @@ Resources:
               - GET
             AllowedOrigins:
               - '*'
-
   AssetBucketPolicy:
     Type: AWS::S3::BucketPolicy
     Properties:
@@ -76,6 +75,31 @@ Resources:
         SigningBehavior: always
         SigningProtocol: sigv4
 
+  ApiGatewayCertificate:
+    Type: AWS::CertificateManager::Certificate
+    Properties:
+      DomainName: report-a-death.dev.account.gov.uk
+      DomainValidationOptions:
+        - DomainName: report-a-death.dev.account.gov.uk
+          HostedZoneId:
+            Fn::ImportValue: DevHostedZoneId
+      ValidationMethod: DNS
+      CertificateTransparencyLoggingPreference: ENABLED
+
+  ApiGateway:
+    Type: AWS::Serverless::Api
+    Properties:
+      StageName: Prod
+      Domain:
+        DomainName: report-a-death.dev.account.gov.uk
+        CertificateArn: !Ref ApiGatewayCertificate
+        EndpointConfiguration: REGIONAL
+        Route53:
+          HostedZoneId:
+            Fn::ImportValue: DevHostedZoneId
+          EvaluateTargetHealth: true
+          IpV6: true
+
   HelloFunction:
     Type: AWS::Serverless::Function
     Properties:
@@ -88,11 +112,13 @@ Resources:
         HelloGet:
           Type: Api
           Properties:
+            RestApiId: !Ref ApiGateway
             Path: /hello
             Method: get
         HelloPost:
           Type: Api
           Properties:
+            RestApiId: !Ref ApiGateway
             Path: /hello
             Method: post
     Metadata:
@@ -115,6 +141,7 @@ Resources:
         HelloWorld:
           Type: Api
           Properties:
+            RestApiId: !Ref ApiGateway
             Path: /world
             Method: get
     Metadata:
@@ -145,6 +172,7 @@ Resources:
         HelloWorld:
           Type: Api
           Properties:
+            RestApiId: !Ref ApiGateway
             Path: /demo
             Method: get
     Metadata:
@@ -185,6 +213,6 @@ Resources:
 Outputs:
   HelloWorldApi:
     Description: API Gateway endpoint URL for Prod stage for Hello World function
-    Value: !Sub "https://${ServerlessRestApi}.execute-api.${AWS::Region}.amazonaws.com/Prod/hello"
+    Value: !Sub "https://${ApiGateway}.execute-api.${AWS::Region}.amazonaws.com/Prod/hello"
   AssetBucketName:
     Value: !Ref AssetBucket
