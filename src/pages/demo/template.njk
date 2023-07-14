@@ -5,7 +5,7 @@
 
 {% block content %}
 <h1 class="govuk-heading-xl">Demo page</h1>
-    <form action="demo" method="get">
+    <form action="/demo" method="post">
         {{ govukRadios({
             name: "where-do-you-live",
             value: answer,
