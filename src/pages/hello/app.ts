@@ -1,5 +1,5 @@
 import { APIGatewayProxyEvent, APIGatewayProxyResult } from 'aws-lambda';
-import { getSessionId } from './common/cookie';
+import {  getSessionId } from './common/cookie';
 import { renderAsHtmlResponse } from './common/templating';
 
 export const lambdaHandler = async (event: APIGatewayProxyEvent): Promise<APIGatewayProxyResult> => {
@@ -21,6 +21,7 @@ export const lambdaHandler = async (event: APIGatewayProxyEvent): Promise<APIGat
 const get = (event: APIGatewayProxyEvent): APIGatewayProxyResult => {
     const cookies = event.headers['Cookie'];
     const sessionId = getSessionId(cookies);
+    const answer = getCookie(cookies, 'answer');
     try {
         return renderAsHtmlResponse(event, 'template.njk', { sessionId: 'static-value', answer: 'scotland' });
     } catch (err) {
