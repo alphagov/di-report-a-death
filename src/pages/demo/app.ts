@@ -1,6 +1,11 @@
-import {APIGatewayProxyEvent, APIGatewayProxyResult} from 'aws-lambda';
-import {renderAsHtmlResponse} from './common/templating';
-import {getSession} from "./common/session";
+import { APIGatewayProxyEvent, APIGatewayProxyResult } from 'aws-lambda';
+import { renderAsHtmlResponse } from './common/templating';
+import { getSession, writeSessionField } from './common/session';
+import { Form, GatewayResult, parseForm } from './common/forms';
+import { ErrorCollection } from '../../common/errors';
+
+const form_key = 'where-do-you-live';
+const valid_options = ['england', 'scotland', 'wales', 'northern-ireland'];
 
 export const lambdaHandler = async (event: APIGatewayProxyEvent): Promise<APIGatewayProxyResult> => {
     const method = event.httpMethod.toUpperCase();
@@ -19,13 +24,9 @@ export const lambdaHandler = async (event: APIGatewayProxyEvent): Promise<APIGat
 };
 
 const get = async (event: APIGatewayProxyEvent): Promise<APIGatewayProxyResult> => {
-    const session = await getSession(event)
+    const session = await getSession(event);
     try {
-        return renderAsHtmlResponse(
-            event,
-            'template.njk',
-            { session: JSON.stringify(session), answer: 'scotland' }
-        );
+        return renderAsHtmlResponse(event, 'template.njk', { session });
     } catch (err) {
         console.log(err);
         return {
@@ -37,24 +38,38 @@ const get = async (event: APIGatewayProxyEvent): Promise<APIGatewayProxyResult> 
     }
 };
 
-const post = (event: APIGatewayProxyEvent): APIGatewayProxyResult => {
-    const answer = event.body?.split('=')[1];
+const post = (event: APIGatewayProxyEvent): GatewayResult => {
     try {
-        return {
-            statusCode: 303,
-            headers: {
-                location: 'hello',
-                'set-cookie': `answer=${answer}; Secure; HttpOnly`,
-            },
-            body: '',
-        };
+        return parseForm(event, processForm(event));
     } catch (err) {
         console.log(err);
         return {
             statusCode: 500,
             body: JSON.stringify({
-                message: 'some error happened',
+                message: err,
             }),
         };
     }
 };
+
+const processForm =
+    (event: APIGatewayProxyEvent) =>
+    async (form: Form): Promise<APIGatewayProxyResult> => {
+        const errors: ErrorCollection = {};
+        function renderPageWithErrors() {
+            return renderAsHtmlResponse(event, 'template.njk', { form, errors });
+        }
+
+        if (!(form[form_key] && valid_options.includes(form[form_key]))) {
+            errors[form_key] = { text: 'Select the country where you live' };
+            return renderPageWithErrors();
+        }
+        await writeSessionField(event, form_key, form[form_key]);
+        return {
+            statusCode: 303,
+            headers: {
+                location: '/check-answers',
+            },
+            body: '',
+        };
+    };

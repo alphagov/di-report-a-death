@@ -4,11 +4,12 @@
 {% extends "base.njk" %}
 
 {% block content %}
-<h1 class="govuk-heading-xl">Demo page</h1>
+    <h1 class="govuk-heading-xl">Demo page</h1>
     <form action="/demo" method="post">
         {{ govukRadios({
             name: "where-do-you-live",
-            value: answer,
+            value: form['where-do-you-live'] or session['where-do-you-live']['S'],
+            errorMessage: errors['where-do-you-live'],
             fieldset: {
                 legend: {
                     text: "Where do you live?",
@@ -36,10 +37,10 @@
             ]
         }) }}
 
+
         {{ govukButton({
             text: "Confirm and send",
             preventDoubleClick: true
         }) }}
     </form>
-    <p class="govuk-body">{{ session }}</p>
 {% endblock %}

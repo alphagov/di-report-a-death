@@ -192,12 +192,18 @@ Resources:
       Architectures:
       - x86_64
       Events:
-        HelloWorld:
+        GetDemo:
           Type: Api
           Properties:
             RestApiId: !Ref ApiGateway
             Path: /demo
             Method: get
+        PostDemo:
+          Type: Api
+          Properties:
+            RestApiId: !Ref ApiGateway
+            Path: /demo
+            Method: post
     Metadata:
       BuildMethod: esbuild
       BuildProperties:

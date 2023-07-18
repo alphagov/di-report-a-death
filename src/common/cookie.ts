@@ -9,6 +9,6 @@ export function getCookie(cookies: string | undefined, name: string): string | u
         return undefined;
     }
 
-    const cookie = cookies.split('; ').filter((it) => it.includes(name));
+    const cookie = cookies.split('; ').filter((it) => it.startsWith(`${name}=`));
     return cookie[0]?.split('=')[1];
 }
