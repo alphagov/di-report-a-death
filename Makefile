@@ -29,6 +29,13 @@ es-build:
 templates: FORCE
 	node scripts/package-templates.js
 
+local: all
+	docker compose --project-directory infrastructure/dev -f infrastructure/dev/dynamodb.docker-compose.yaml up &
+	sam local start-api -s ../../assets -n local.env.json --docker-network lambda-local
+
+clean-local:
+	docker compose -f infrastructure/dev/dynamodb.docker-compose.yaml down
+
 upload-assets: FORCE
 	scripts/upload-assets.sh
 

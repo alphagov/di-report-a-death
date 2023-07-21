@@ -22,6 +22,7 @@ Globals:
       Variables:
         ASSET_PATH: !Sub "https://${AssetDistribution.DomainName}/${CommitHash}"
         SESSION_TABLE: !Ref SessionTable
+        DYNAMO_DB_ENDPOINT_OVERRIDE: ""
   Api:
     TracingEnabled: true
 Resources:

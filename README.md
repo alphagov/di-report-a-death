@@ -15,16 +15,11 @@ First time setup:
 - Install latest Node (nvm suggested)
 - Install AWS SAM CLI (`brew install aws-sam-cli`)
 - Install jq (used by scripts/upload-assets.sh, `brew install jq`)
-
-```shell
-cd src
-npm i
-```
+- Install Docker Desktop
 
 Run:
 ```shell
-make
-sam local start-api -s ../../assets -n local.env.json
+make local
 ```
 
 Running tests:
