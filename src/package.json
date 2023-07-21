@@ -3,12 +3,16 @@
   "version": "1.0.0",
   "description": "",
   "workspaces": [
-    "./pages/*"
+    "./pages/*",
+    "./common"
   ],
   "scripts": {
-    "lint": "eslint '**/*.ts' --quiet --fix"
+    "lint": "eslint '**/*.ts' --quiet --fix",
+    "build-sass": "rm -rf ../assets/public/style.css && sass --load-path=node_modules/govuk-frontend/govuk --no-source-map --quiet-deps ./common/styles/application.scss ../assets/public/styles.css --style compressed"
   },
   "devDependencies": {
+    "govuk-frontend": "^4.6.0",
+    "sass": "^1.63.6",
     "@typescript-eslint/eslint-plugin": "^5.10.2",
     "@typescript-eslint/parser": "^5.10.2",
     "eslint": "^8.8.0",

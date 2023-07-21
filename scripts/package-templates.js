@@ -35,7 +35,7 @@ function copyBaseTemplate(buildDirs) {
 function copyGovuk(buildDirs) {
     buildDirs.forEach(path => {
         fs.cpSync(
-            `src/build-deps/node_modules/govuk-frontend/govuk`,
+            `src/node_modules/govuk-frontend/govuk`,
             `${path}/govuk`,
             {recursive: true}
         )
