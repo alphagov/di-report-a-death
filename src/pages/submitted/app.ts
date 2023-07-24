@@ -6,8 +6,6 @@ export const lambdaHandler = async (event: APIGatewayProxyEvent): Promise<APIGat
     const method = event.httpMethod.toUpperCase();
     if (method === 'GET') {
         return get(event);
-    } else if (method == 'POST') {
-        return post(event);
     } else {
         return {
             statusCode: 405,
@@ -22,26 +20,6 @@ const get = async (event: APIGatewayProxyEvent): Promise<APIGatewayProxyResult> 
     try {
         const session = await getSession(event);
         return renderAsHtmlResponse(event, 'template.njk', {session, mapping: {"where-do-you-live": {"england": "England", "scotland": "Scotland", "northern-ireland": "Northern Ireland", "wales": "Wales"}}});
-    } catch (err) {
-        console.log(err);
-        return {
-            statusCode: 500,
-            body: JSON.stringify({
-                message: 'some error happened',
-            }),
-        };
-    }
-};
-
-const post = (event: APIGatewayProxyEvent): APIGatewayProxyResult => {
-    try {
-        return {
-            statusCode: 303,
-            headers: {
-                location: '/submitted',
-            },
-            body: '',
-        };
     } catch (err) {
         console.log(err);
         return {

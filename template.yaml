@@ -232,11 +232,49 @@ Resources:
       Architectures:
         - x86_64
       Events:
-        HelloWorld:
+        GetCheckAnswers:
           Type: Api
           Properties:
             RestApiId: !Ref ApiGateway
             Path: /check-answers
+            Method: get
+        PostCheckAnswers:
+          Type: Api
+          Properties:
+            RestApiId: !Ref ApiGateway
+            Path: /check-answers
+            Method: post
+    Metadata:
+      BuildMethod: esbuild
+      BuildProperties:
+        Minify: true
+        Target: es2020
+        External:
+          - "@aws-sdk/client-dynamodb"
+        Sourcemap: true
+        EntryPoints:
+          - app.ts
+  SubmittedFunction:
+    Type: AWS::Serverless::Function
+    Connectors:
+      SessionTable:
+        Properties:
+          Destination:
+            Id: SessionTable
+          Permissions:
+            - Read
+    Properties:
+      CodeUri: src/pages/submitted/
+      Handler: app.lambdaHandler
+      Runtime: nodejs18.x
+      Architectures:
+        - x86_64
+      Events:
+        HelloWorld:
+          Type: Api
+          Properties:
+            RestApiId: !Ref ApiGateway
+            Path: /submitted
             Method: get
     Metadata:
       BuildMethod: esbuild

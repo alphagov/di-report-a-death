@@ -1,9 +1,50 @@
-{% from "govuk/components/radios/macro.njk" import govukRadios %}
+{% from "govuk/components/summary-list/macro.njk" import govukSummaryList %}
 {% from "govuk/components/button/macro.njk" import govukButton %}
 
 {% extends "base.njk" %}
 
 {% block content %}
 <h1 class="govuk-heading-xl">Check your answers</h1>
+
+<h2 class="govuk-heading-m">Personal details</h2>
+
+{{ govukSummaryList({
+  classes: 'govuk-!-margin-bottom-9',
+  rows: [
+    {
+      key: {
+        text: "Where do you live?"
+      },
+      value: {
+        text: mapping['where-do-you-live'][session["where-do-you-live"]["S"]]
+      },
+      actions: {
+        items: [
+          {
+            href: "#",
+            text: "Change",
+            visuallyHiddenText: "name"
+          }
+        ]
+      }
+    }
+  ]
+}) }}
+
+<h2 class="govuk-heading-m">Now send your application</h2>
+
+<p class="govuk-body">By submitting this application you are confirming that, to the best of your knowledge, the
+  details you are providing are correct.</p>
+
+<form action="/check-answers" method="post" novalidate>
+
+  <input type="hidden" name="answers-checked" value="true">
+
+  {{ govukButton({
+      text: "Accept and send"
+  }) }}
+
+</form>
+
 
 {% endblock %}
