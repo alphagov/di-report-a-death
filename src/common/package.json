@@ -1,0 +1,15 @@
+{
+  "name": "common_typedefs",
+  "version": "1.0.0",
+  "description": "This is just for code completion in common",
+  "license": "MIT",
+  "devDependencies": {
+    "@types/aws-lambda": "^8.10.92",
+    "@types/jest": "^29.2.0",
+    "@types/node": "^18.11.4",
+    "@types/nunjucks": "^3.2.2"
+  },
+  "dependencies": {
+    "@aws-sdk/client-dynamodb": "^3.369.0"
+  }
+}

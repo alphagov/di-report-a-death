@@ -1,0 +1,53 @@
+{% extends "govuk/template.njk" %}
+{% from "govuk/components/cookie-banner/macro.njk" import govukCookieBanner %}
+{% from "govuk/components/phase-banner/macro.njk" import govukPhaseBanner %}
+{% from "govuk/components/back-link/macro.njk" import govukBackLink %}
+
+{% block head %}
+    <link href="{{assetPath}}/styles.css" rel="stylesheet">
+{% endblock %}
+
+{% block header %}
+    {{ govukHeader({
+        homepageUrl: "https://www.gov.uk",
+        serviceName: "Report a Death"
+    }) }}
+{% endblock %}
+
+{% block main %}
+    <div class="govuk-width-container">
+        {{ govukPhaseBanner({
+            tag: {
+                text: "alpha"
+            },
+            text: "This is not a real service"
+        }) }}
+        {% block beforeContent %}{% endblock %}
+        {% if showBack %}
+            {{ govukBackLink({
+                text: "back",
+                href: hrefBack
+            }) }}
+        {% endif %}
+        <main class="govuk-main-wrapper" id="main-content" role="main">
+            <div class="govuk-grid-row">
+                <div class="govuk-grid-column-two-thirds">
+                    {%  include "error-summary.njk" %}
+                    {% block content %}{% endblock %}
+                </div>
+            </div>
+        </main>
+    </div>
+{% endblock %}
+
+{% block footer %}
+    {{ govukFooter({
+    }) }}
+{% endblock %}
+
+{% block bodyEnd %}
+    <script src="{{assetPath}}/all.js"></script>
+    <script>
+        window.GOVUKFrontend.initAll()
+    </script>
+{% endblock %}

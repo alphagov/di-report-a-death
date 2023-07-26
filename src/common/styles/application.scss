@@ -1,0 +1,27 @@
+$govuk-assets-path: "./" !default;
+
+@import "base";
+@import "core/all";
+@import "utilities/all";
+@import "objects/all";
+@import "overrides/all";
+
+@import "components/back-link/back-link";
+@import "components/button/button";
+@import "components/character-count/character-count";
+@import "components/checkboxes/checkboxes";
+@import "components/cookie-banner/cookie-banner";
+@import "components/details/details";
+@import "components/error-summary/error-summary";
+@import "components/footer/footer";
+@import "components/header/header";
+@import "components/input/input";
+@import "components/inset-text/inset-text";
+@import "components/notification-banner/notification-banner";
+@import "components/panel/panel";
+@import "components/phase-banner/phase-banner";
+@import "components/radios/radios";
+@import "components/skip-link/skip-link";
+@import "components/summary-list/summary-list";
+@import "components/table/table";
+@import "components/warning-text/warning-text";
