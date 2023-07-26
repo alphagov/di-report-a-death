@@ -18,6 +18,8 @@ Globals:
   Function:
     Timeout: 15
     Tracing: Active
+    Architectures:
+      - arm64
     Environment:
       Variables:
         ASSET_PATH: !Sub "https://${AssetDistribution.DomainName}/${CommitHash}"
@@ -107,8 +109,6 @@ Resources:
       CodeUri: src/pages/start/
       Handler: app.lambdaHandler
       Runtime: nodejs18.x
-      Architectures:
-        - x86_64
       Events:
         Get:
           Type: Api
@@ -138,8 +138,6 @@ Resources:
       CodeUri: src/pages/demo/
       Handler: app.lambdaHandler
       Runtime: nodejs18.x
-      Architectures:
-      - x86_64
       Events:
         Get:
           Type: Api
@@ -178,8 +176,6 @@ Resources:
       CodeUri: src/pages/check-answers/
       Handler: app.lambdaHandler
       Runtime: nodejs18.x
-      Architectures:
-        - x86_64
       Events:
         Get:
           Type: Api
@@ -217,8 +213,6 @@ Resources:
       CodeUri: src/pages/submitted/
       Handler: app.lambdaHandler
       Runtime: nodejs18.x
-      Architectures:
-        - x86_64
       Events:
         Get:
           Type: Api
@@ -243,8 +237,6 @@ Resources:
       CodeUri: src/pages/not-found/
       Handler: app.lambdaHandler
       Runtime: nodejs18.x
-      Architectures:
-        - x86_64
       Events:
         Get:
           Type: Api
