@@ -1,4 +1,4 @@
-import { downcaseHeaders } from './headers';
+import { downcaseHeaders } from '../headers';
 import { APIGatewayProxyEvent, APIGatewayProxyResult } from 'aws-lambda';
 import * as querystring from 'querystring';
 import { ParsedUrlQuery } from 'querystring';
@@ -72,5 +72,8 @@ function formToSingleValuesOnly(form: ParsedUrlQuery): Form {
 }
 
 export function isOrIncludes(fieldValue: Form[keyof Form], testValue: string): boolean {
-    return fieldValue && fieldValue.includes(testValue);
+    if (!fieldValue) {
+        return false
+    }
+    return fieldValue.includes(testValue);
 }

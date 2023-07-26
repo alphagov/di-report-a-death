@@ -1,8 +1,9 @@
 import { APIGatewayProxyEvent, APIGatewayProxyResult } from 'aws-lambda';
 import { renderAsHtmlResponse } from './common/templating';
-import {getSession} from "./common/session";
+import { getSession } from './common/session';
+import {withErrorHandling} from "./common/routing";
 
-export const lambdaHandler = async (event: APIGatewayProxyEvent): Promise<APIGatewayProxyResult> => {
+export const lambdaHandler = withErrorHandling(async (event) => {
     const method = event.httpMethod.toUpperCase();
     if (method === 'GET') {
         return get(event);
@@ -14,12 +15,22 @@ export const lambdaHandler = async (event: APIGatewayProxyEvent): Promise<APIGat
             }),
         };
     }
-};
+});
 
 const get = async (event: APIGatewayProxyEvent): Promise<APIGatewayProxyResult> => {
     try {
         const session = await getSession(event);
-        return renderAsHtmlResponse(event, 'template.njk', {session, mapping: {"where-do-you-live": {"england": "England", "scotland": "Scotland", "northern-ireland": "Northern Ireland", "wales": "Wales"}}});
+        return renderAsHtmlResponse(event, 'template.njk', {
+            session,
+            mapping: {
+                'where-do-you-live': {
+                    england: 'England',
+                    scotland: 'Scotland',
+                    'northern-ireland': 'Northern Ireland',
+                    wales: 'Wales',
+                },
+            },
+        });
     } catch (err) {
         console.log(err);
         return {

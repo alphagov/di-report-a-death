@@ -25,3 +25,7 @@ $govuk-assets-path: "./" !default;
 @import "components/summary-list/summary-list";
 @import "components/table/table";
 @import "components/warning-text/warning-text";
+
+.hide {
+  display: none;
+}

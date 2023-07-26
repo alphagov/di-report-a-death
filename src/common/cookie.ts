@@ -1,9 +1,3 @@
-import { randomUUID } from 'crypto';
-
-export function getSessionId(cookies: string | undefined): string {
-    return getCookie(cookies, 'session') ?? randomUUID();
-}
-
 export function getCookie(cookies: string | undefined, name: string): string | undefined {
     if (cookies === undefined) {
         return undefined;

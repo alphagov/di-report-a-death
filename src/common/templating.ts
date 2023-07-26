@@ -1,6 +1,6 @@
 import { APIGatewayProxyEvent, APIGatewayProxyResult } from 'aws-lambda';
 import { configure } from 'nunjucks';
-import { ErrorCollection } from './errors';
+import { ErrorCollection } from './forms/errors';
 
 export function renderAsHtmlResponse(
     event: APIGatewayProxyEvent,
