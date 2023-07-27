@@ -31,7 +31,7 @@ templates: FORCE
 
 local: all
 	docker compose --project-directory infrastructure/dev -f infrastructure/dev/dynamodb.docker-compose.yaml up &
-	sam local start-api -s ../../assets -n local.env.json --docker-network lambda-local
+	sam local start-api -s ../../assets -n local.env.json --docker-network lambda-local --warm-containers LAZY
 
 clean-local:
 	docker compose -f infrastructure/dev/dynamodb.docker-compose.yaml down
