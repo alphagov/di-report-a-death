@@ -1,13 +1,14 @@
 import { APIGatewayProxyEvent, APIGatewayProxyResult } from 'aws-lambda';
 import { renderAsHtmlResponse } from './common/templating';
 import { getSession, writeSessionField } from './common/session';
-import { Form, GatewayResult, parseForm } from './common/forms';
-import { ErrorCollection } from '../../common/errors';
+import { Form, GatewayResult, parseForm } from './common/forms/forms';
+import { ErrorCollection } from './common/forms/errors';
+import {withErrorHandling} from "./common/routing";
 
 const form_key = 'where-do-you-live';
 const valid_options = ['england', 'scotland', 'wales', 'northern-ireland'];
 
-export const lambdaHandler = async (event: APIGatewayProxyEvent): Promise<APIGatewayProxyResult> => {
+export const lambdaHandler = withErrorHandling(async (event) => {
     const method = event.httpMethod.toUpperCase();
     if (method === 'GET') {
         return get(event);
@@ -21,7 +22,7 @@ export const lambdaHandler = async (event: APIGatewayProxyEvent): Promise<APIGat
             }),
         };
     }
-};
+});
 
 const get = async (event: APIGatewayProxyEvent): Promise<APIGatewayProxyResult> => {
     const session = await getSession(event);

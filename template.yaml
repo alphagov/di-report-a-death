@@ -121,6 +121,8 @@ Resources:
       BuildProperties:
         Minify: true
         Target: es2020
+        External:
+          - "@aws-sdk/client-dynamodb"
         Sourcemap: true
         EntryPoints:
           - app.ts
