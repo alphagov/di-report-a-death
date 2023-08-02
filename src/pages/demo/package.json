@@ -5,7 +5,8 @@
   "scripts": {
     "unit": "jest",
     "compile": "tsc",
-    "test": "npm run compile && npm run unit"
+    "test": "npm run compile && npm run unit",
+    "build": "esbuild app.ts --bundle --platform=node --outdir=build --format=cjs --minify --target=es2020 --external:@aws-sdk/client-dynamodb --external:@aws-sdk/lib-dynamodb --sourcemap"
   },
   "dependencies": {
     "esbuild": "^0.14.14",

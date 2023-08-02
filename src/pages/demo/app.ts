@@ -3,10 +3,16 @@ import { renderAsHtmlResponse } from './common/templating';
 import { getSession, writeSessionField } from './common/session';
 import { Form, GatewayResult, parseForm } from './common/forms/forms';
 import { ErrorCollection } from './common/forms/errors';
-import {withErrorHandling} from "./common/routing";
+import { withErrorHandling } from './common/routing';
+import { includes, WhereDoYouLive } from './common/answer';
 
-const form_key = 'where-do-you-live';
-const valid_options = ['england', 'scotland', 'wales', 'northern-ireland'];
+const form_key: keyof WhereDoYouLive = 'where-do-you-live';
+const valid_options: ReadonlyArray<WhereDoYouLive['where-do-you-live']> = [
+    'england',
+    'scotland',
+    'wales',
+    'northern-ireland',
+];
 
 export const lambdaHandler = withErrorHandling(async (event) => {
     const method = event.httpMethod.toUpperCase();
@@ -61,7 +67,7 @@ const processForm =
             return renderAsHtmlResponse(event, 'template.njk', { form, errors });
         }
 
-        if (!(form[form_key] && valid_options.includes(form[form_key]))) {
+        if (!(form[form_key] && includes(valid_options, form[form_key]))) {
             errors[form_key] = { text: 'Select the country where you live' };
             return renderPageWithErrors();
         }

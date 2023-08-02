@@ -1,5 +1,5 @@
 {
-  "name": "common_typedefs",
+  "name": "common",
   "version": "1.0.0",
   "description": "This is just for code completion in common",
   "license": "MIT",
@@ -10,6 +10,7 @@
     "@types/nunjucks": "^3.2.2"
   },
   "dependencies": {
-    "@aws-sdk/client-dynamodb": "^3.369.0"
+    "@aws-sdk/client-dynamodb": "^3.369.0",
+    "@aws-sdk/lib-dynamodb": "^3.379.1"
   }
 }

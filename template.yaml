@@ -105,6 +105,14 @@ Resources:
 
   StartFunction:
     Type: AWS::Serverless::Function
+    Connectors:
+      SessionTable:
+        Properties:
+          Destination:
+            Id: SessionTable
+          Permissions:
+            - Read
+            - Write
     Properties:
       CodeUri: src/pages/start/
       Handler: app.lambdaHandler
@@ -116,6 +124,12 @@ Resources:
             RestApiId: !Ref ApiGateway
             Path: /
             Method: get
+        Post:
+          Type: Api
+          Properties:
+            RestApiId: !Ref ApiGateway
+            Path: /
+            Method: post
     Metadata:
       BuildMethod: esbuild
       BuildProperties:
@@ -123,6 +137,7 @@ Resources:
         Target: es2020
         External:
           - "@aws-sdk/client-dynamodb"
+          - "@aws-sdk/lib-dynamodb"
         Sourcemap: true
         EntryPoints:
           - app.ts
@@ -160,6 +175,7 @@ Resources:
         Target: es2020
         External:
         - "@aws-sdk/client-dynamodb"
+        - "@aws-sdk/lib-dynamodb"
         Sourcemap: true
         EntryPoints:
         - app.ts
@@ -198,6 +214,7 @@ Resources:
         Target: es2020
         External:
           - "@aws-sdk/client-dynamodb"
+          - "@aws-sdk/lib-dynamodb"
         Sourcemap: true
         EntryPoints:
           - app.ts
@@ -229,6 +246,7 @@ Resources:
         Target: es2020
         External:
           - "@aws-sdk/client-dynamodb"
+          - "@aws-sdk/lib-dynamodb"
         Sourcemap: true
         EntryPoints:
           - app.ts

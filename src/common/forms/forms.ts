@@ -73,7 +73,7 @@ function formToSingleValuesOnly(form: ParsedUrlQuery): Form {
 
 export function isOrIncludes(fieldValue: Form[keyof Form], testValue: string): boolean {
     if (!fieldValue) {
-        return false
+        return false;
     }
     return fieldValue.includes(testValue);
 }
