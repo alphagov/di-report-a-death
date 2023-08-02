@@ -103,6 +103,28 @@ Resources:
           EvaluateTargetHealth: true
           IpV6: true
 
+  4xxErrorResponse:
+    Type: AWS::ApiGateway::GatewayResponse
+    Properties:
+      RestApiId: !Ref ApiGateway
+      ResponseType: DEFAULT_4XX
+      ResponseTemplates:
+        'Fn::Transform':
+          Name: 'AWS::Include'
+          Parameters:
+            Location: 'gateway-error.yaml'
+
+  5xxErrorResponse:
+    Type: AWS::ApiGateway::GatewayResponse
+    Properties:
+      RestApiId: !Ref ApiGateway
+      ResponseType: DEFAULT_5XX
+      ResponseTemplates:
+        'Fn::Transform':
+          Name: 'AWS::Include'
+          Parameters:
+            Location: 'gateway-error.yaml'
+
   StartFunction:
     Type: AWS::Serverless::Function
     Connectors:
