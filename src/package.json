@@ -4,7 +4,8 @@
   "description": "",
   "workspaces": [
     "./pages/*",
-    "./common"
+    "./common",
+    "./authoriser"
   ],
   "scripts": {
     "lint": "eslint '**/*.ts' --quiet --fix",

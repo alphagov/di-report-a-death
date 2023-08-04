@@ -11,8 +11,15 @@ Parameters:
     Default: dev
     AllowedValues:
       - dev
+      - build
+      - staging
+      - integration
+      - prod
   CommitHash:
     Type: String
+
+Conditions:
+  NonProd: !Not [!Equals [!Ref Environment, prod]]
 
 Globals:
   Function:
@@ -25,8 +32,10 @@ Globals:
         ASSET_PATH: !Sub "https://${AssetDistribution.DomainName}/${CommitHash}"
         SESSION_TABLE: !Ref SessionTable
         DYNAMO_DB_ENDPOINT_OVERRIDE: ""
+        ENVIRONMENT: !Ref Environment
   Api:
     TracingEnabled: true
+
 Resources:
   AssetBucket:
     Type: AWS::S3::Bucket
@@ -93,6 +102,12 @@ Resources:
     Type: AWS::Serverless::Api
     Properties:
       StageName: Prod
+      Auth:
+        DefaultAuthorizer: BasicAuthNonProd
+        Authorizers:
+          BasicAuthNonProd:
+            FunctionArn: !GetAtt NonProdAuthoriserFunction.Arn
+            FunctionPayloadType: TOKEN
       Domain:
         DomainName: report-a-death.dev.account.gov.uk
         CertificateArn: !Ref ApiGatewayCertificate
@@ -102,6 +117,32 @@ Resources:
             Fn::ImportValue: DevHostedZoneId
           EvaluateTargetHealth: true
           IpV6: true
+
+  NonProdAuthoriserFunction:
+    Type: AWS::Serverless::Function
+    Properties:
+      CodeUri: src/authoriser/
+      Handler: app.lambdaHandler
+      Runtime: nodejs18.x
+    Metadata:
+      BuildMethod: esbuild
+      BuildProperties:
+        Minify: true
+        Target: es2020
+        Sourcemap: true
+        EntryPoints:
+          - app.ts
+
+  UnauthorizedErrorResponse:
+    Condition: NonProd
+    Type: AWS::ApiGateway::GatewayResponse
+    Properties:
+      RestApiId: !Ref ApiGateway
+      ResponseType: UNAUTHORIZED
+      ResponseParameters:
+        "gatewayresponse.header.WWW-Authenticate": "'Basic'"
+      StatusCode: "401"
+
 
   4xxErrorResponse:
     Type: AWS::ApiGateway::GatewayResponse
