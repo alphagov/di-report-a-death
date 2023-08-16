@@ -40,6 +40,6 @@ upload-assets: FORCE
 	scripts/upload-assets.sh
 
 deploy: all upload-assets
-	sam deploy --parameter-overrides CommitHash=$$(git rev-parse HEAD)
+	sam deploy --parameter-overrides CommitHash=$$(git rev-parse HEAD) Environment=dev
 
 FORCE: ;
