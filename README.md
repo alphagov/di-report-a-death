@@ -1,4 +1,6 @@
 # Report a Death
+Report a Death will be a citizen facing service aiming to improve the end-to-end experience of dealing with death and the government.
+
 
 ## Overview
 Most of the tech used here is very standard across DI. We use Typescript Node lambdas, deployed using SAM. DynamoDB is
@@ -8,7 +10,8 @@ lambdas.
 We're using a lambda per page approach, with a small amount of custom build logic to package the correct templates into
 each lambda. Assets are served from S3 using cloudfront.
 
-![Architecure Diagram](docs/Architecture.png)
+## Architecture
+Architecture decision records start [here](docs/architecture/decisions/0001-use-adr.md)
 
 ## Running locally
 First time setup:
