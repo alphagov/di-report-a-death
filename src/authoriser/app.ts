@@ -1,13 +1,10 @@
 import { APIGatewayTokenAuthorizerEvent, Callback, Context } from 'aws-lambda';
 import { APIGatewayAuthorizerResult } from 'aws-lambda/trigger/api-gateway-authorizer';
 
-export const lambdaHandler = async (
-    event: APIGatewayTokenAuthorizerEvent,
-    _context: Context,
-    callback: Callback<void>,
-) => {
-    if (process.env.Environment === 'prod') {
-        return buildAllowAllPolicy(event);
+export const lambdaHandler = async (event: APIGatewayTokenAuthorizerEvent, _context: Context, callback: Callback) => {
+    if (process.env.ENVIRONMENT === 'prod' || process.env.ENVIRONMENT === 'local') {
+        callback(null, buildAllowAllPolicy(event));
+        return;
     }
 
     if (event.authorizationToken === 'Basic dXNlcjpwYXNz') {
@@ -16,7 +13,6 @@ export const lambdaHandler = async (
         // This is in line with advice around prototypes: https://prototype-kit.service.gov.uk/docs/publishing#setting-a-password
         return buildAllowAllPolicy(event);
     }
-    console.log(event.authorizationToken);
     return callback('Unauthorized');
 };
 

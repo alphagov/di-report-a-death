@@ -10,6 +10,7 @@ Parameters:
     Type: String
     Default: dev
     AllowedValues:
+      - local
       - dev
       - build
       - staging
@@ -102,12 +103,35 @@ Resources:
     Type: AWS::Serverless::Api
     Properties:
       StageName: Prod
+      Variables:
+        Environment: !Ref Environment
       Auth:
-        DefaultAuthorizer: BasicAuthNonProd
+        DefaultAuthorizer: !Ref Environment
         Authorizers:
-          BasicAuthNonProd:
+          dev:
             FunctionArn: !GetAtt NonProdAuthoriserFunction.Arn
             FunctionPayloadType: TOKEN
+          build:
+            FunctionArn: !GetAtt NonProdAuthoriserFunction.Arn
+            FunctionPayloadType: TOKEN
+          staging:
+            FunctionArn: !GetAtt NonProdAuthoriserFunction.Arn
+            FunctionPayloadType: TOKEN
+          integration:
+            FunctionArn: !GetAtt NonProdAuthoriserFunction.Arn
+            FunctionPayloadType: TOKEN
+          prod:
+            FunctionArn: !GetAtt ProdAuthoriserFunction.Arn
+            FunctionPayloadType: REQUEST
+            Identity:
+              StageVariables:
+                - Environment
+          local:
+            FunctionArn: !GetAtt ProdAuthoriserFunction.Arn
+            FunctionPayloadType: REQUEST
+            Identity:
+              StageVariables:
+                - Environment
       Domain:
         DomainName: report-a-death.dev.account.gov.uk
         CertificateArn: !Ref ApiGatewayCertificate
@@ -122,6 +146,21 @@ Resources:
     Type: AWS::Serverless::Function
     Properties:
       CodeUri: src/authoriser/
+      Handler: app.lambdaHandler
+      Runtime: nodejs18.x
+    Metadata:
+      BuildMethod: esbuild
+      BuildProperties:
+        Minify: true
+        Target: es2020
+        Sourcemap: true
+        EntryPoints:
+          - app.ts
+
+  ProdAuthoriserFunction:
+    Type: AWS::Serverless::Function
+    Properties:
+      CodeUri: src/prod-authoriser/
       Handler: app.lambdaHandler
       Runtime: nodejs18.x
     Metadata:
