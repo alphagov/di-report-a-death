@@ -88,17 +88,6 @@ Resources:
         SigningBehavior: always
         SigningProtocol: sigv4
 
-  ApiGatewayCertificate:
-    Type: AWS::CertificateManager::Certificate
-    Properties:
-      DomainName: report-a-death.dev.account.gov.uk
-      DomainValidationOptions:
-        - DomainName: report-a-death.dev.account.gov.uk
-          HostedZoneId:
-            Fn::ImportValue: DevHostedZoneId
-      ValidationMethod: DNS
-      CertificateTransparencyLoggingPreference: ENABLED
-
   ApiGateway:
     Type: AWS::Serverless::Api
     Properties:
@@ -134,11 +123,12 @@ Resources:
                 - Environment
       Domain:
         DomainName: report-a-death.dev.account.gov.uk
-        CertificateArn: !Ref ApiGatewayCertificate
+        CertificateArn:
+          Fn::ImportValue: CertificateArn
         EndpointConfiguration: REGIONAL
         Route53:
           HostedZoneId:
-            Fn::ImportValue: DevHostedZoneId
+            Fn::ImportValue: HostedZoneId
           EvaluateTargetHealth: true
           IpV6: true
 

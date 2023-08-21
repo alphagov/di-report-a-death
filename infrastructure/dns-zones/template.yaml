@@ -1,0 +1,67 @@
+AWSTemplateFormatVersion: "2010-09-09"
+
+Description: >-
+  All the DNS Hosted Zones for the Report a Death service.
+Parameters:
+  Environment:
+    Description: The name of the environment to deploy to
+    Type: String
+    AllowedValues:
+      - dev
+      - build
+      - staging
+      - integration
+      - production
+
+Conditions:
+  IsProduction: !Equals [ !Ref Environment, production]
+
+Mappings:
+  EnvironmentConfiguration:
+    dev:
+      domainName: report-a-death.dev.account.gov.uk
+    build:
+      domainName: report-a-death.build.account.gov.uk
+    staging:
+      domainName: report-a-death.staging.account.gov.uk
+    integration:
+      domainName: report-a-death.integration.account.gov.uk
+    production:
+      domainName: report-a-death.account.gov.uk
+
+Resources:
+  HostedZone:
+    Type: AWS::Route53::HostedZone
+    DeletionPolicy: Retain
+    UpdateReplacePolicy: Retain
+    Properties:
+      Name: !If
+        - IsProduction
+        - report-a-death.account.gov.uk
+        - !Sub report-a-death.${Environment}.account.gov.uk
+
+  Certificate:
+    Type: AWS::CertificateManager::Certificate
+    Properties:
+      DomainName: !FindInMap [ EnvironmentConfiguration, !Ref Environment, domainName ]
+      DomainValidationOptions:
+        - DomainName: !FindInMap [ EnvironmentConfiguration, !Ref Environment, domainName ]
+          HostedZoneId: !GetAtt HostedZone.Id
+      ValidationMethod: DNS
+      CertificateTransparencyLoggingPreference: ENABLED
+
+Outputs:
+  HostedZoneNameServers:
+    Value: !Join
+      - ","
+      - !GetAtt HostedZone.NameServers
+    Export:
+      Name: HostedZoneNameServers
+  HostedZoneId:
+    Value: !GetAtt HostedZone.Id
+    Export:
+      Name: HostedZoneId
+  CertificateArn:
+    Value: !Ref Certificate
+    Export:
+      Name: CertificateArn
