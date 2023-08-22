@@ -1,0 +1,10 @@
+[
+  {
+    "ParameterKey": "AvailabilityZoneCount",
+    "ParameterValue": "2"
+  },
+  {
+    "ParameterKey": "DynamoDBApiEnabled",
+    "ParameterValue": "Yes"
+  }
+]

@@ -1,0 +1,46 @@
+[
+  {
+    "ParameterKey": "AllowedAccounts",
+    "ParameterValue": "032740817598"
+  },
+  {
+    "ParameterKey": "BuildNotificationStackName",
+    "ParameterValue": "build-notifications"
+  },
+  {
+    "ParameterKey": "Environment",
+    "ParameterValue": "build"
+  },
+  {
+    "ParameterKey": "GitHubRepositoryName",
+    "ParameterValue": "di-report-a-death"
+  },
+  {
+    "ParameterKey": "IncludePromotion",
+    "ParameterValue": "Yes"
+  },
+  {
+    "ParameterKey": "RequireManualApproval",
+    "ParameterValue": "No"
+  },
+  {
+    "ParameterKey": "SAMStackName",
+    "ParameterValue": "rad-deployment"
+  },
+  {
+    "ParameterKey": "SigningProfileArn",
+    "ParameterValue": "arn:aws:signer:eu-west-2:719513158169:/signing-profiles/SigningProfile_MbJw2N5XbtAa"
+  },
+  {
+    "ParameterKey": "SigningProfileVersionArn",
+    "ParameterValue": "arn:aws:signer:eu-west-2:719513158169:/signing-profiles/SigningProfile_MbJw2N5XbtAa/EXt3bKcvnH"
+  },
+  {
+    "ParameterKey": "SlackNotificationType",
+    "ParameterValue": "Failures"
+  },
+  {
+    "ParameterKey": "VpcStackName",
+    "ParameterValue": "vpc"
+  }
+]

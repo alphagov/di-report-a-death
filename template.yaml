@@ -18,9 +18,34 @@ Parameters:
       - prod
   CommitHash:
     Type: String
+  CodeSigningConfigArn:
+    Type: String
+    Description: >
+      The ARN of the Code Signing Config to use, provided by the deployment pipeline
+  PermissionsBoundary:
+    Type: String
+    Description: >
+      The ARN of the permissions boundary to apply to any role created by the template
+    Default: "none"
+
 
 Conditions:
   NonProd: !Not [!Equals [!Ref Environment, prod]]
+  CodeSigningEnabled:
+    Fn::Not:
+      - Fn::Or:
+          - Fn::Equals:
+            - Environment
+            - local
+          - Fn::Equals:
+            - Environment
+            - dev
+  UsePermissionsBoundary:
+    Fn::Not:
+      - Fn::Equals:
+          - !Ref PermissionsBoundary
+          - "none"
+
 
 Globals:
   Function:
@@ -28,6 +53,14 @@ Globals:
     Tracing: Active
     Architectures:
       - arm64
+    CodeSigningConfigArn: !If
+      - CodeSigningEnabled
+      - !Ref CodeSigningConfigArn
+      - !Ref AWS::NoValue
+    PermissionsBoundary: !If
+      - UsePermissionsBoundary
+      - !Ref PermissionsBoundary
+      - !Ref AWS::NoValue
     Environment:
       Variables:
         ASSET_PATH: !Sub "https://${AssetDistribution.DomainName}/${CommitHash}"
