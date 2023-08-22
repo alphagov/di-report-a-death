@@ -18,6 +18,7 @@ Parameters:
       - prod
   CommitHash:
     Type: String
+    Default: COMMITHASHTOREPLACE
   CodeSigningConfigArn:
     Type: String
     Description: >

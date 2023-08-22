@@ -18,6 +18,8 @@ jobs:
         with:
           node-version: '18'
       - uses: aws-actions/setup-sam@v2
+      - name: Set commit hash
+        run: sed -i s/COMMITHASHTOREPLACE/$(git rev-parse HEAD)/g template.yaml
       - run: make
       - uses: aws-actions/configure-aws-credentials@v2
         with:
