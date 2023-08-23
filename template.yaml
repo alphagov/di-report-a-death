@@ -21,26 +21,33 @@ Parameters:
     Default: COMMITHASHTOREPLACE
   CodeSigningConfigArn:
     Type: String
-    Description: >
-      The ARN of the Code Signing Config to use, provided by the deployment pipeline
+    Description: The ARN of the Code Signing Config to use, provided by the deployment pipeline
+    Default: "none"
   PermissionsBoundary:
     Type: String
-    Description: >
-      The ARN of the permissions boundary to apply to any role created by the template
+    Description: The ARN of the permissions boundary to apply to any role created by the template
     Default: "none"
 
+Mappings:
+  EnvironmentConfiguration:
+    dev:
+      domainName: report-a-death.dev.account.gov.uk
+    build:
+      domainName: report-a-death.build.account.gov.uk
+    staging:
+      domainName: report-a-death.staging.account.gov.uk
+    integration:
+      domainName: report-a-death.integration.account.gov.uk
+    production:
+      domainName: report-a-death.account.gov.uk
 
 Conditions:
   NonProd: !Not [!Equals [!Ref Environment, prod]]
-  CodeSigningEnabled:
+  UseCodeSigning:
     Fn::Not:
-      - Fn::Or:
-          - Fn::Equals:
-            - Environment
-            - local
-          - Fn::Equals:
-            - Environment
-            - dev
+      - Fn::Equals:
+          - !Ref CodeSigningConfigArn
+          - none
   UsePermissionsBoundary:
     Fn::Not:
       - Fn::Equals:
@@ -55,7 +62,7 @@ Globals:
     Architectures:
       - arm64
     CodeSigningConfigArn: !If
-      - CodeSigningEnabled
+      - UseCodeSigning
       - !Ref CodeSigningConfigArn
       - !Ref AWS::NoValue
     PermissionsBoundary: !If
@@ -155,6 +162,16 @@ Resources:
             Identity:
               StageVariables:
                 - Environment
+      Domain:
+        DomainName: !FindInMap [ EnvironmentConfiguration, !Ref Environment, domainName ]
+        CertificateArn:
+          Fn::ImportValue: CertificateArn
+        EndpointConfiguration: REGIONAL
+        Route53:
+          HostedZoneId:
+            Fn::ImportValue: HostedZoneId
+          EvaluateTargetHealth: true
+          IpV6: true
 
   NonProdAuthoriserFunction:
     Type: AWS::Serverless::Function
