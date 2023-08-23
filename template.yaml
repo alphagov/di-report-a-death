@@ -18,9 +18,35 @@ Parameters:
       - prod
   CommitHash:
     Type: String
+    Default: COMMITHASHTOREPLACE
+  CodeSigningConfigArn:
+    Type: String
+    Description: >
+      The ARN of the Code Signing Config to use, provided by the deployment pipeline
+  PermissionsBoundary:
+    Type: String
+    Description: >
+      The ARN of the permissions boundary to apply to any role created by the template
+    Default: "none"
+
 
 Conditions:
   NonProd: !Not [!Equals [!Ref Environment, prod]]
+  CodeSigningEnabled:
+    Fn::Not:
+      - Fn::Or:
+          - Fn::Equals:
+            - Environment
+            - local
+          - Fn::Equals:
+            - Environment
+            - dev
+  UsePermissionsBoundary:
+    Fn::Not:
+      - Fn::Equals:
+          - !Ref PermissionsBoundary
+          - "none"
+
 
 Globals:
   Function:
@@ -28,6 +54,14 @@ Globals:
     Tracing: Active
     Architectures:
       - arm64
+    CodeSigningConfigArn: !If
+      - CodeSigningEnabled
+      - !Ref CodeSigningConfigArn
+      - !Ref AWS::NoValue
+    PermissionsBoundary: !If
+      - UsePermissionsBoundary
+      - !Ref PermissionsBoundary
+      - !Ref AWS::NoValue
     Environment:
       Variables:
         ASSET_PATH: !Sub "https://${AssetDistribution.DomainName}/${CommitHash}"
@@ -88,17 +122,6 @@ Resources:
         SigningBehavior: always
         SigningProtocol: sigv4
 
-  ApiGatewayCertificate:
-    Type: AWS::CertificateManager::Certificate
-    Properties:
-      DomainName: report-a-death.dev.account.gov.uk
-      DomainValidationOptions:
-        - DomainName: report-a-death.dev.account.gov.uk
-          HostedZoneId:
-            Fn::ImportValue: DevHostedZoneId
-      ValidationMethod: DNS
-      CertificateTransparencyLoggingPreference: ENABLED
-
   ApiGateway:
     Type: AWS::Serverless::Api
     Properties:
@@ -132,15 +155,6 @@ Resources:
             Identity:
               StageVariables:
                 - Environment
-      Domain:
-        DomainName: report-a-death.dev.account.gov.uk
-        CertificateArn: !Ref ApiGatewayCertificate
-        EndpointConfiguration: REGIONAL
-        Route53:
-          HostedZoneId:
-            Fn::ImportValue: DevHostedZoneId
-          EvaluateTargetHealth: true
-          IpV6: true
 
   NonProdAuthoriserFunction:
     Type: AWS::Serverless::Function
@@ -349,6 +363,28 @@ Resources:
         External:
           - "@aws-sdk/client-dynamodb"
           - "@aws-sdk/lib-dynamodb"
+        Sourcemap: true
+        EntryPoints:
+          - app.ts
+
+  NoSessionFunction:
+    Type: AWS::Serverless::Function
+    Properties:
+      CodeUri: src/pages/no-session/
+      Handler: app.lambdaHandler
+      Runtime: nodejs18.x
+      Events:
+        Get:
+          Type: Api
+          Properties:
+            RestApiId: !Ref ApiGateway
+            Path: /error/no-session
+            Method: any
+    Metadata:
+      BuildMethod: esbuild
+      BuildProperties:
+        Minify: true
+        Target: es2020
         Sourcemap: true
         EntryPoints:
           - app.ts

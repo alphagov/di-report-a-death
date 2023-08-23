@@ -135,3 +135,5 @@ redirect.zip
 volume/
 
 **/assets/
+
+!infrastructure/stack-orchestration/configuration/build

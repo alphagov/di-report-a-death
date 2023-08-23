@@ -3,6 +3,7 @@
 {% from "govuk/components/cookie-banner/macro.njk" import govukCookieBanner %}
 {% from "govuk/components/phase-banner/macro.njk" import govukPhaseBanner %}
 {% from "govuk/components/back-link/macro.njk" import govukBackLink %}
+{% from "components/timeout-warning/macro.njk" import govukTimeoutWarning %}
 
 {% block head %}
     <link href="{{assetPath}}/styles.css" rel="stylesheet">
@@ -13,6 +14,14 @@
         homepageUrl: "https://www.gov.uk",
         serviceName: "Report a Death"
     }) }}
+
+    {% if not noTimeoutWarning %}
+        {{ govukTimeoutWarning({
+            redirectUrl: "/error/no-session",
+            modalIdleTimeMinutes: 45,
+            modalVisibleTimeMinutes: 15
+        }) }}
+    {% endif %}
 {% endblock %}
 
 {% block main %}
@@ -47,8 +56,9 @@
 {% endblock %}
 
 {% block bodyEnd %}
-    <script src="{{assetPath}}/all.js"></script>
-    <script>
-        window.GOVUKFrontend.initAll()
-    </script>
+    <script src="{{assetPath}}/app.js"></script>
+
+    {% if not noTimeoutWarning %}
+        <script type="text/javascript">setTimeoutWarning()</script>
+    {% endif %}
 {% endblock %}

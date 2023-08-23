@@ -2,6 +2,8 @@
 
 {% from "govuk/components/panel/macro.njk" import govukPanel %}
 
+{% set noTimeoutWarning = true %}
+
 {% block content %}
     {{ govukPanel({
         titleText: "Application complete",

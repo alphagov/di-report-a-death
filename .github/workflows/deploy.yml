@@ -1,0 +1,32 @@
+name: Deploy
+
+on:
+  workflow_dispatch:
+  push:
+    branches:
+      - "main"
+
+jobs:
+  build-and-deploy:
+    runs-on: ubuntu-latest
+    permissions:
+      id-token: write
+      contents: read
+    steps:
+      - uses: actions/checkout@v3
+      - uses: actions/setup-node@v3
+        with:
+          node-version: '18'
+      - uses: aws-actions/setup-sam@v2
+      - name: Set commit hash
+        run: sed -i s/COMMITHASHTOREPLACE/$(git rev-parse HEAD)/g template.yaml
+      - run: make
+      - uses: aws-actions/configure-aws-credentials@v2
+        with:
+          role-to-assume: ${{ secrets.GH_ACTIONS_ROLE_ARN }}
+          role-session-name: deploy-sam
+          aws-region: "eu-west-2"
+      - uses: alphagov/di-devplatform-upload-action@v3.3
+        with:
+          artifact-bucket-name: ${{ secrets.ARTIFACT_BUCKET_NAME }}
+          signing-profile-name: ${{ secrets.SIGNING_PROFILE_NAME }}

@@ -1,30 +1,30 @@
 $govuk-assets-path: "./" !default;
 
-@import "base";
-@import "core/all";
-@import "utilities/all";
-@import "objects/all";
-@import "overrides/all";
+@import "govuk/base";
+@import "govuk/core/all";
+@import "govuk/utilities/all";
+@import "govuk/objects/all";
+@import "govuk/overrides/all";
 
-@import "components/back-link/back-link";
-@import "components/button/button";
-@import "components/character-count/character-count";
-@import "components/checkboxes/checkboxes";
-@import "components/cookie-banner/cookie-banner";
-@import "components/details/details";
-@import "components/error-summary/error-summary";
-@import "components/footer/footer";
-@import "components/header/header";
-@import "components/input/input";
-@import "components/inset-text/inset-text";
-@import "components/notification-banner/notification-banner";
-@import "components/panel/panel";
-@import "components/phase-banner/phase-banner";
-@import "components/radios/radios";
-@import "components/skip-link/skip-link";
-@import "components/summary-list/summary-list";
-@import "components/table/table";
-@import "components/warning-text/warning-text";
+@import "govuk/components/back-link/back-link";
+@import "govuk/components/button/button";
+@import "govuk/components/character-count/character-count";
+@import "govuk/components/checkboxes/checkboxes";
+@import "govuk/components/cookie-banner/cookie-banner";
+@import "govuk/components/details/details";
+@import "govuk/components/error-summary/error-summary";
+@import "govuk/components/footer/footer";
+@import "govuk/components/header/header";
+@import "govuk/components/input/input";
+@import "govuk/components/inset-text/inset-text";
+@import "govuk/components/notification-banner/notification-banner";
+@import "govuk/components/panel/panel";
+@import "govuk/components/phase-banner/phase-banner";
+@import "govuk/components/radios/radios";
+@import "govuk/components/skip-link/skip-link";
+@import "govuk/components/summary-list/summary-list";
+@import "govuk/components/table/table";
+@import "govuk/components/warning-text/warning-text";
 
 .hide {
   display: none;

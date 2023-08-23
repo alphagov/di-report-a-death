@@ -1,0 +1,30 @@
+<!--[if !IE 8]><!-->
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/dialog-polyfill/0.5.0/dialog-polyfill.js"></script>
+<!--<![endif]-->
+
+<dialog class="govuk-timeout-warning dialog" data-module="govuk-timeout-warning"
+id="js-timeout-warning"
+data-minutes-idle-timeout={{ params.modalIdleTimeMinutes }}
+data-minutes-modal-visible={{ params.modalVisibleTimeMinutes }}
+data-url-redirect={{ params.redirectUrl }}
+data-translated-minute="minute"
+data-translated-minutes="minutes"
+data-translated-second="second"
+data-translated-seconds="seconds"
+{# This has to be set in JS so screen readers #}
+{# Repeat the first section but skip the second on updates #}
+data-translated-before-timer="If you do not respond within "
+data-translated-after-timer="your session will end and you must restart."
+role="alertdialog"
+aria-live="polite"
+aria-labelledby="dialog-title"
+aria-describedby="at-timer">
+  <h1 id="dialog-title" class="govuk-heading-l">
+    Your session will time out soon
+  </h1>
+  <div class="govuk-body">
+    <span class="timer" aria-hidden="true" aria-relevant="additions"></span>
+    <span class="at-timer govuk-visually-hidden" role="status" id="at-timer"></span>
+  </div>
+  <button class="govuk-button dialog-button js-dialog-close" data-module="govuk-button">I’m still here — continue</button>
+</dialog>
