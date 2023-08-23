@@ -155,16 +155,6 @@ Resources:
             Identity:
               StageVariables:
                 - Environment
-      Domain:
-        DomainName: report-a-death.dev.account.gov.uk
-        CertificateArn:
-          Fn::ImportValue: CertificateArn
-        EndpointConfiguration: REGIONAL
-        Route53:
-          HostedZoneId:
-            Fn::ImportValue: HostedZoneId
-          EvaluateTargetHealth: true
-          IpV6: true
 
   NonProdAuthoriserFunction:
     Type: AWS::Serverless::Function
