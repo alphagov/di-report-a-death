@@ -5,12 +5,12 @@
   "license": "MIT",
   "devDependencies": {
     "@types/aws-lambda": "^8.10.92",
-    "@types/jest": "^29.2.0",
-    "@types/node": "^18.11.4",
+    "@types/jest": "^29.5.4",
+    "@types/node": "^18.17.8",
     "@types/nunjucks": "^3.2.2"
   },
   "dependencies": {
     "@aws-sdk/client-dynamodb": "^3.395.0",
-    "@aws-sdk/lib-dynamodb": "^3.379.1"
+    "@aws-sdk/lib-dynamodb": "^3.395.0"
   }
 }
