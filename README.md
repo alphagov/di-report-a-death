@@ -45,4 +45,5 @@ make deploy
 
 ## Adding a page
 - Copy an existing page. Make sure to use `cp -a` to preserve the symlink to common
+- Add the lambda function to the SAM template in template.yaml
 - Change the package name in package.json
