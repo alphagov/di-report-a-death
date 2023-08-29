@@ -1,0 +1,125 @@
+AWSTemplateFormatVersion: '2010-09-09'
+Description: Static asset distribution for Report a Death
+
+Resources:
+  AssetBucket:
+    Type: AWS::S3::Bucket
+    Properties:
+      # checkov:skip=CKV_AWS_18: No access logging currently needed on a static asset distribution
+      ObjectLockEnabled: true
+      ObjectLockConfiguration:
+        ObjectLockEnabled: "Enabled"
+        Rule:
+          DefaultRetention:
+            Years: 2
+            Mode: GOVERNANCE
+      PublicAccessBlockConfiguration:
+        BlockPublicAcls: true
+        BlockPublicPolicy: true
+        IgnorePublicAcls: true
+        RestrictPublicBuckets: true
+      VersioningConfiguration:
+        Status: Enabled
+      CorsConfiguration:
+        CorsRules:
+          - AllowedMethods:
+              - GET
+            AllowedOrigins:
+              - '*'
+      Tags:
+        - Key: CheckovRulesToSkip
+          Value: CKV_AWS_18
+
+  AssetBucketPolicy:
+    Type: AWS::S3::BucketPolicy
+    Properties:
+      Bucket: !Ref AssetBucket
+      PolicyDocument:
+        Version: 2012-10-17
+        Statement:
+          - Action:
+              - 's3:GetObject'
+            Effect: Allow
+            Resource: !Sub "${AssetBucket.Arn}/*"
+            Principal:
+              Service: "cloudfront.amazonaws.com"
+            Condition:
+              StringEquals:
+                "AWS:SourceArn": !Sub "arn:aws:cloudfront::${AWS::AccountId}:distribution/${AssetDistribution}"
+  AssetDistribution:
+    Type: AWS::CloudFront::Distribution
+    Properties:
+      # checkov:skip=CKV_AWS_68: No WAF needed on a static asset distribution
+      # checkov:skip=CKV_AWS_86: No access logging currently needed on a static asset distribution
+      DistributionConfig:
+        Enabled: true
+        PriceClass: PriceClass_100
+        Origins:
+          - DomainName: !GetAtt AssetBucket.RegionalDomainName
+            Id: s3-asset-bucket
+            OriginAccessControlId: !GetAtt AssetDistributionOriginAccessControl.Id
+            S3OriginConfig:
+              OriginAccessIdentity: ""
+        DefaultCacheBehavior:
+          CachePolicyId: 4135ea2d-6df8-44a3-9df3-4b5a84be39ad # Cache disabled managed policy
+          ViewerProtocolPolicy: https-only
+          TargetOriginId: s3-asset-bucket
+      Tags:
+        - Key: CheckovRulesToSkip
+          Value: CKV_AWS_68.CKV_AWS_86
+  AssetDistributionOriginAccessControl:
+    Type: AWS::CloudFront::OriginAccessControl
+    Properties:
+      OriginAccessControlConfig:
+        Name: s3-asset-bucket
+        OriginAccessControlOriginType: s3
+        SigningBehavior: always
+        SigningProtocol: sigv4
+
+  PermitAssetUploadPolicy:
+    Type: AWS::IAM::ManagedPolicy
+    Properties:
+      ManagedPolicyName: PermitAssetUpload
+      PolicyDocument:
+        Version: "2012-10-17"
+        Statement:
+          - Sid: "PutObject"
+            Effect: "Allow"
+            Action:
+              - "s3:PutObject"
+            Resource:
+              - !Sub "${AssetBucket.Arn}/*"
+  GithubActionsUploadRole:
+    Type: "AWS::IAM::Role"
+    Properties:
+      AssumeRolePolicyDocument:
+        Version: "2012-10-17"
+        Statement:
+          - Effect: "Allow"
+            Action: "sts:AssumeRoleWithWebIdentity"
+            Principal:
+              Federated: !ImportValue GitHubIdentityProviderArn
+            Condition:
+              StringEquals:
+                "token.actions.githubusercontent.com:sub": "repo:alphagov/di-report-a-death:ref:refs/heads/main"
+                "token.actions.githubusercontent.com:aud": "sts.amazonaws.com"
+      ManagedPolicyArns:
+        - !Ref PermitAssetUploadPolicy
+      Tags:
+        - Key: Name
+          Value: GithubActionsUploadRole
+        - Key: Source
+          Value: alphagov/di-report-a-death/infrastructure/asset-distribution/template.yaml
+        - Key: Owner
+          Value: report-a-death-dev@digital.cabinet-office.gov.uk
+
+
+Outputs:
+  AssetDomain:
+    Value: !GetAtt AssetDistribution.DomainName
+  AssetBucketName:
+    Value: !Ref AssetBucket
+  GithubActionsUploadRoleName:
+    Value: !Ref GithubActionsUploadRole
+  GithubActionsUploadRoleArn:
+    Value: !GetAtt GithubActionsUploadRole.Arn

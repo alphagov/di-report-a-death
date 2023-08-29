@@ -4,6 +4,7 @@ PROVISION_COMMAND="../../../di-devplatform-deploy/stack-orchestration-tool/provi
 
 export AUTO_APPLY_CHANGESET=true
 export SKIP_AWS_AUTHENTICATION=true
+export AWS_PAGER=""
 
 ## Provision dependencies
 for dir in configuration/"$ENVIRONMENT"/*/; do
