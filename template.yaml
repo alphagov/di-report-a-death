@@ -27,21 +27,24 @@ Parameters:
     Type: String
     Description: The ARN of the permissions boundary to apply to any role created by the template
     Default: "none"
-  VpcStackName:
-    Type: String
-    Description: The name of the stack used to create the VPC
+
 Mappings:
   EnvironmentConfiguration:
     dev:
       domainName: report-a-death.dev.account.gov.uk
+      assetDomainName: d93qbl2oxo1rz.cloudfront.net
     build:
       domainName: report-a-death.build.account.gov.uk
+      assetDomainName: example.com
     staging:
       domainName: report-a-death.staging.account.gov.uk
+      assetDomainName: example.com
     integration:
       domainName: report-a-death.integration.account.gov.uk
+      assetDomainName: example.com
     production:
       domainName: report-a-death.account.gov.uk
+      assetDomainName: example.com
 
 Conditions:
   NonProd: !Not [!Equals [!Ref Environment, prod]]
@@ -70,12 +73,16 @@ Globals:
       - UsePermissionsBoundary
       - !Ref PermissionsBoundary
       - !Ref AWS::NoValue
-    VpcConfig:
-      SecurityGroupIds:
-        - !Ref LambdaSecurityGroup
     Environment:
       Variables:
-        ASSET_PATH: !Sub "https://${AssetDistribution.DomainName}/${CommitHash}"
+        ASSET_PATH:
+          Fn::Sub:
+            - "https://${AssetDistributionDomain}/${CommitHash}"
+            - AssetDistributionDomain:
+                Fn::FindInMap:
+                  - EnvironmentConfiguration
+                  - !Ref Environment
+                  - assetDomainName
         SESSION_TABLE: !Ref SessionTable
         DYNAMO_DB_ENDPOINT_OVERRIDE: ""
         ENVIRONMENT: !Ref Environment
@@ -83,141 +90,11 @@ Globals:
     TracingEnabled: true
 
 Resources:
-  AssetBucket:
-    Type: AWS::S3::Bucket
-    Properties:
-      PublicAccessBlockConfiguration:
-        BlockPublicAcls: true
-        BlockPublicPolicy: true
-        IgnorePublicAcls: true
-        RestrictPublicBuckets: true
-      VersioningConfiguration:
-        Status: Enabled
-      CorsConfiguration:
-        CorsRules:
-          - AllowedMethods:
-              - GET
-            AllowedOrigins:
-              - '*'
-  AssetBucketPolicy:
-    Type: AWS::S3::BucketPolicy
-    Properties:
-      Bucket: !Ref AssetBucket
-      PolicyDocument:
-        Version: 2012-10-17
-        Statement:
-            - Action:
-              - 's3:GetObject'
-              Effect: Allow
-              Resource: !Sub "${AssetBucket.Arn}/*"
-              Principal:
-                Service: "cloudfront.amazonaws.com"
-              Condition:
-                StringEquals:
-                  "AWS:SourceArn": !Sub "arn:aws:cloudfront::${AWS::AccountId}:distribution/${AssetDistribution}"
-  AssetDistribution:
-    Type: AWS::CloudFront::Distribution
-    Properties:
-      # checkov:skip=CKV_AWS_68: No WAF needed on a static asset distribution
-      DistributionConfig:
-        Enabled: true
-        PriceClass: PriceClass_100
-        ViewerCertificate:
-          SslSupportMethod: sni-only
-          MinimumProtocolVersion: TLSv1.2_2021
-        Logging:
-          Bucket: !Ref LogsBucket
-          IncludeCookies: false
-          Prefix: asset-distribution/
-        Origins:
-          - DomainName: !GetAtt AssetBucket.RegionalDomainName
-            Id: s3-assets
-            OriginAccessControlId: !GetAtt AssetDistributionOriginAccessControl.Id
-            S3OriginConfig:
-              OriginAccessIdentity: ""
-        DefaultCacheBehavior:
-          CachePolicyId: 4135ea2d-6df8-44a3-9df3-4b5a84be39ad # Cache disabled managed policy
-          ViewerProtocolPolicy: https-only
-          TargetOriginId: s3-assets
-      Tags:
-        - CheckovRulesToSkip: CKV_AWS_68
-  AssetDistributionOriginAccessControl:
-    Type: AWS::CloudFront::OriginAccessControl
-    Properties:
-      OriginAccessControlConfig:
-        Name: s3-assets
-        OriginAccessControlOriginType: s3
-        SigningBehavior: always
-        SigningProtocol: sigv4
-
-  LogsBucket:
-    Type: AWS::S3::Bucket
-    Properties:
-      # checkov:skip=CKV_AWS_18: The logs bucket doesn't need logging.
-      PublicAccessBlockConfiguration:
-        BlockPublicAcls: true
-        BlockPublicPolicy: true
-        IgnorePublicAcls: true
-        RestrictPublicBuckets: true
-      VersioningConfiguration:
-        Status: Enabled
-
-  LambdaSecurityGroup:
-    Type: AWS::EC2::SecurityGroup
-    Properties:
-      GroupDescription: Lambda Security Group permissions ruleset
-      VpcId:
-        Fn::ImportValue: !Sub ${VpcStackName}-VpcId
-      SecurityGroupEgress:
-        - DestinationSecurityGroupId:
-            Fn::ImportValue: !Sub ${VpcStackName}-AWSServicesEndpointSecurityGroupId
-          Description: Allow outbound traffic to vpc endpoints
-          IpProtocol: tcp
-          FromPort: 443
-          ToPort: 443
-
-  MainKmsKey:
-    Type: AWS::KMS::Key
-    Properties:
-      EnableKeyRotation: true
-      KeyPolicy:
-        Version: 2012-10-17
-        Statement:
-          - Effect: Allow
-            Principal:
-              AWS: !Sub arn:aws:iam::${AWS::AccountId}:root
-            Action: kms:*
-            Resource: "*"
-          - Effect: Allow
-            Principal:
-              Service: !Sub dynamodb.${AWS::Region}.amazonaws.com
-            Action:
-              - kms:Encrypt
-              - kms:Decrypt
-            Resource: "*"
-            Condition:
-              StringEquals:
-                kms:callerAccount: !Ref AWS::AccountId
   ApiGateway:
     Type: AWS::Serverless::Api
     Properties:
-      # checkov:skip=CKV_AWS_120: Disable caching: RAD-407 to review this decision
       StageName: Prod
-      AccessLogSetting:
-        DestinationArn: !GetAtt ApiGatewayLogGroup.Arn
-        Format: >-
-          {
-            "requestId":"$context.requestId",
-            "requestTime":"$context.requestTime",
-            "httpMethod":"$context.httpMethod",
-            "path":"$context.path",
-            "routeKey":"$context.routeKey",
-            "status":"$context.status",
-            "protocol":"$context.protocol",
-            "responseLatency":"$context.responseLatency",
-            "responseLength":"$context.responseLength"
-          }
-      TracingEnabled: true
+      AlwaysDeploy: true # Resolves an issue where changes to default responses aren't picked up
       Variables:
         Environment: !Ref Environment
       Auth:
@@ -257,18 +134,10 @@ Resources:
             Fn::ImportValue: HostedZoneId
           EvaluateTargetHealth: true
           IpV6: true
-  ApiGatewayLogGroup:
-    Type: AWS::Logs::LogGroup
-    Properties:
-      LogGroupName: !Sub /aws/apigateway/${AWS::StackName}-access-logs
-      RetentionInDays: 14
 
   NonProdAuthoriserFunction:
     Type: AWS::Serverless::Function
     Properties:
-      # checkov:skip=CKV_AWS_115: Not yet ready to set concurrent execution limit
-      # checkov:skip=CKV_AWS_116: No DLQ needed for these functions
-      # checkov:skip=CKV_AWS_117: VPC settings are set globally.
       CodeUri: src/authoriser/
       Handler: app.lambdaHandler
       Runtime: nodejs18.x
@@ -284,9 +153,6 @@ Resources:
   ProdAuthoriserFunction:
     Type: AWS::Serverless::Function
     Properties:
-      # checkov:skip=CKV_AWS_115: Not yet ready to set concurrent execution limit
-      # checkov:skip=CKV_AWS_116: No DLQ needed for these functions
-      # checkov:skip=CKV_AWS_117: VPC settings are set globally.
       CodeUri: src/prod-authoriser/
       Handler: app.lambdaHandler
       Runtime: nodejs18.x
@@ -343,9 +209,6 @@ Resources:
             - Read
             - Write
     Properties:
-      # checkov:skip=CKV_AWS_115: Not yet ready to set concurrent execution limit
-      # checkov:skip=CKV_AWS_116: No DLQ needed for these functions
-      # checkov:skip=CKV_AWS_117: VPC settings are set globally.
       CodeUri: src/pages/start/
       Handler: app.lambdaHandler
       Runtime: nodejs18.x
@@ -384,9 +247,6 @@ Resources:
             - Read
             - Write
     Properties:
-      # checkov:skip=CKV_AWS_115: Not yet ready to set concurrent execution limit
-      # checkov:skip=CKV_AWS_116: No DLQ needed for these functions
-      # checkov:skip=CKV_AWS_117: VPC settings are set globally.
       CodeUri: src/pages/demo/
       Handler: app.lambdaHandler
       Runtime: nodejs18.x
@@ -426,9 +286,6 @@ Resources:
             - Read
             - Write
     Properties:
-      # checkov:skip=CKV_AWS_115: Not yet ready to set concurrent execution limit
-      # checkov:skip=CKV_AWS_116: No DLQ needed for these functions
-      # checkov:skip=CKV_AWS_117: VPC settings are set globally.
       CodeUri: src/pages/check-answers/
       Handler: app.lambdaHandler
       Runtime: nodejs18.x
@@ -467,9 +324,6 @@ Resources:
           Permissions:
             - Read
     Properties:
-      # checkov:skip=CKV_AWS_115: Not yet ready to set concurrent execution limit
-      # checkov:skip=CKV_AWS_116: No DLQ needed for these functions
-      # checkov:skip=CKV_AWS_117: VPC settings are set globally.
       CodeUri: src/pages/submitted/
       Handler: app.lambdaHandler
       Runtime: nodejs18.x
@@ -495,9 +349,6 @@ Resources:
   NoSessionFunction:
     Type: AWS::Serverless::Function
     Properties:
-      # checkov:skip=CKV_AWS_115: Not yet ready to set concurrent execution limit
-      # checkov:skip=CKV_AWS_116: No DLQ needed for these functions
-      # checkov:skip=CKV_AWS_117: VPC settings are set globally.
       CodeUri: src/pages/no-session/
       Handler: app.lambdaHandler
       Runtime: nodejs18.x
@@ -520,9 +371,6 @@ Resources:
   NotFoundFunction:
     Type: AWS::Serverless::Function
     Properties:
-      # checkov:skip=CKV_AWS_115: Not yet ready to set concurrent execution limit
-      # checkov:skip=CKV_AWS_116: No DLQ needed for these functions
-      # checkov:skip=CKV_AWS_117: VPC settings are set globally.
       CodeUri: src/pages/not-found/
       Handler: app.lambdaHandler
       Runtime: nodejs18.x
@@ -552,10 +400,6 @@ Resources:
       KeySchema:
         - AttributeName: SessionId
           KeyType: HASH
-      SSESpecification:
-        KMSMasterKeyId: !Ref MainKmsKey
-        SSEEnabled: true
-        SSEType: KMS
 
   ApplicationResourceGroup:
     Type: AWS::ResourceGroups::Group
@@ -574,5 +418,3 @@ Outputs:
   HelloWorldApi:
     Description: API Gateway endpoint URL for Prod stage for Hello World function
     Value: !Sub "https://${ApiGateway}.execute-api.${AWS::Region}.amazonaws.com/Prod/hello"
-  AssetBucketName:
-    Value: !Ref AssetBucket
