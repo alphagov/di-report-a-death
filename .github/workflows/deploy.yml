@@ -21,7 +21,7 @@ jobs:
         with:
           use-installer: true
       - name: Set commit hash
-        run: sed -i '' -e s/\${CommitHash}/${{ github.sha }}/g template.yaml gateway-error.yaml
+        run: sed -i s/\${CommitHash}/${{ github.sha }}/g template.yaml gateway-error.yaml
       - run: make
       - uses: aws-actions/configure-aws-credentials@v3
         with:
