@@ -30,3 +30,4 @@ jobs:
         with:
           artifact-bucket-name: ${{ secrets.ARTIFACT_BUCKET_NAME }}
           signing-profile-name: ${{ secrets.SIGNING_PROFILE_NAME }}
+          working-directory: .aws-sam/build
