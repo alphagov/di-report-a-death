@@ -38,16 +38,16 @@ Mappings:
       assetDomainName: d93qbl2oxo1rz.cloudfront.net
     build:
       domainName: report-a-death.build.account.gov.uk
-      assetDomainName: example.com
+      assetDomainName: d37pe9tt933jsq.cloudfront.net
     staging:
       domainName: report-a-death.staging.account.gov.uk
-      assetDomainName: example.com
+      assetDomainName: d37pe9tt933jsq.cloudfront.net
     integration:
       domainName: report-a-death.integration.account.gov.uk
-      assetDomainName: example.com
+      assetDomainName: d37pe9tt933jsq.cloudfront.net
     production:
       domainName: report-a-death.account.gov.uk
-      assetDomainName: example.com
+      assetDomainName: d37pe9tt933jsq.cloudfront.net
 
 Conditions:
   NonProd: !Not [!Equals [!Ref Environment, prod]]
