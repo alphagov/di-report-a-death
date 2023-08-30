@@ -17,7 +17,7 @@ Choose your account to run against. Login to this account with AWS SSO, setting 
 then run the below, replacing `<environment>`with one of `dev`, `build`, `staging`, `integration`, `production`:
 
 ```shell
-AWS_PAGER="" SKIP_AWS_AUTHENTICATION=true ./provision_all.sh <environment>
+./provision_all.sh <environment>
 ```
 
 ## Notes

@@ -21,32 +21,43 @@ Parameters:
     Default: COMMITHASHTOREPLACE
   CodeSigningConfigArn:
     Type: String
-    Description: >
-      The ARN of the Code Signing Config to use, provided by the deployment pipeline
+    Description: The ARN of the Code Signing Config to use, provided by the deployment pipeline
+    Default: "none"
   PermissionsBoundary:
     Type: String
-    Description: >
-      The ARN of the permissions boundary to apply to any role created by the template
+    Description: The ARN of the permissions boundary to apply to any role created by the template
     Default: "none"
 
+Mappings:
+  EnvironmentConfiguration:
+    dev:
+      domainName: report-a-death.dev.account.gov.uk
+      assetDomainName: d93qbl2oxo1rz.cloudfront.net
+    build:
+      domainName: report-a-death.build.account.gov.uk
+      assetDomainName: example.com
+    staging:
+      domainName: report-a-death.staging.account.gov.uk
+      assetDomainName: example.com
+    integration:
+      domainName: report-a-death.integration.account.gov.uk
+      assetDomainName: example.com
+    production:
+      domainName: report-a-death.account.gov.uk
+      assetDomainName: example.com
 
 Conditions:
   NonProd: !Not [!Equals [!Ref Environment, prod]]
-  CodeSigningEnabled:
+  UseCodeSigning:
     Fn::Not:
-      - Fn::Or:
-          - Fn::Equals:
-            - Environment
-            - local
-          - Fn::Equals:
-            - Environment
-            - dev
+      - Fn::Equals:
+          - !Ref CodeSigningConfigArn
+          - none
   UsePermissionsBoundary:
     Fn::Not:
       - Fn::Equals:
           - !Ref PermissionsBoundary
           - "none"
-
 
 Globals:
   Function:
@@ -55,7 +66,7 @@ Globals:
     Architectures:
       - arm64
     CodeSigningConfigArn: !If
-      - CodeSigningEnabled
+      - UseCodeSigning
       - !Ref CodeSigningConfigArn
       - !Ref AWS::NoValue
     PermissionsBoundary: !If
@@ -64,7 +75,14 @@ Globals:
       - !Ref AWS::NoValue
     Environment:
       Variables:
-        ASSET_PATH: !Sub "https://${AssetDistribution.DomainName}/${CommitHash}"
+        ASSET_PATH:
+          Fn::Sub:
+            - "https://${AssetDistributionDomain}/${CommitHash}"
+            - AssetDistributionDomain:
+                Fn::FindInMap:
+                  - EnvironmentConfiguration
+                  - !Ref Environment
+                  - assetDomainName
         SESSION_TABLE: !Ref SessionTable
         DYNAMO_DB_ENDPOINT_OVERRIDE: ""
         ENVIRONMENT: !Ref Environment
@@ -72,60 +90,11 @@ Globals:
     TracingEnabled: true
 
 Resources:
-  AssetBucket:
-    Type: AWS::S3::Bucket
-    Properties:
-      CorsConfiguration:
-        CorsRules:
-          - AllowedMethods:
-              - GET
-            AllowedOrigins:
-              - '*'
-  AssetBucketPolicy:
-    Type: AWS::S3::BucketPolicy
-    Properties:
-      Bucket: !Ref AssetBucket
-      PolicyDocument:
-        Version: 2012-10-17
-        Statement:
-            - Action:
-              - 's3:GetObject'
-              Effect: Allow
-              Resource: !Sub "${AssetBucket.Arn}/*"
-              Principal:
-                Service: "cloudfront.amazonaws.com"
-              Condition:
-                StringEquals:
-                  "AWS:SourceArn": !Sub "arn:aws:cloudfront::${AWS::AccountId}:distribution/${AssetDistribution}"
-  AssetDistribution:
-    Type: AWS::CloudFront::Distribution
-    Properties:
-      DistributionConfig:
-        Enabled: true
-        PriceClass: PriceClass_100
-        Origins:
-          - DomainName: !GetAtt AssetBucket.RegionalDomainName
-            Id: s3-assets
-            OriginAccessControlId: !GetAtt AssetDistributionOriginAccessControl.Id
-            S3OriginConfig:
-              OriginAccessIdentity: ""
-        DefaultCacheBehavior:
-          CachePolicyId: 4135ea2d-6df8-44a3-9df3-4b5a84be39ad # Cache disabled managed policy
-          ViewerProtocolPolicy: https-only
-          TargetOriginId: s3-assets
-  AssetDistributionOriginAccessControl:
-    Type: AWS::CloudFront::OriginAccessControl
-    Properties:
-      OriginAccessControlConfig:
-        Name: s3-assets
-        OriginAccessControlOriginType: s3
-        SigningBehavior: always
-        SigningProtocol: sigv4
-
   ApiGateway:
     Type: AWS::Serverless::Api
     Properties:
       StageName: Prod
+      AlwaysDeploy: true # Resolves an issue where changes to default responses aren't picked up
       Variables:
         Environment: !Ref Environment
       Auth:
@@ -155,6 +124,16 @@ Resources:
             Identity:
               StageVariables:
                 - Environment
+      Domain:
+        DomainName: !FindInMap [ EnvironmentConfiguration, !Ref Environment, domainName ]
+        CertificateArn:
+          Fn::ImportValue: CertificateArn
+        EndpointConfiguration: REGIONAL
+        Route53:
+          HostedZoneId:
+            Fn::ImportValue: HostedZoneId
+          EvaluateTargetHealth: true
+          IpV6: true
 
   NonProdAuthoriserFunction:
     Type: AWS::Serverless::Function
@@ -439,5 +418,3 @@ Outputs:
   HelloWorldApi:
     Description: API Gateway endpoint URL for Prod stage for Hello World function
     Value: !Sub "https://${ApiGateway}.execute-api.${AWS::Region}.amazonaws.com/Prod/hello"
-  AssetBucketName:
-    Value: !Ref AssetBucket
