@@ -36,10 +36,10 @@ local: all
 clean-local:
 	docker compose -f infrastructure/dev/dynamodb.docker-compose.yaml down
 
-upload-assets: FORCE
-	scripts/upload-assets.sh
+upload-assets-dev: FORCE
+	scripts/upload-assets-dev.sh
 
-deploy: all upload-assets
+deploy: all upload-assets-dev
 	sam deploy --parameter-overrides CommitHash=$$(git rev-parse HEAD) Environment=dev
 
 FORCE: ;

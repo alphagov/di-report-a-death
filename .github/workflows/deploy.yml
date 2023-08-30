@@ -18,10 +18,20 @@ jobs:
         with:
           node-version: '18'
       - uses: aws-actions/setup-sam@v2
+        with:
+          use-installer: true
       - name: Set commit hash
-        run: sed -i s/COMMITHASHTOREPLACE/$(git rev-parse HEAD)/g template.yaml
+        run: sed -i s/COMMITHASHTOREPLACE/${{ github.sha }}/g template.yaml
       - run: make
-      - uses: aws-actions/configure-aws-credentials@v2
+      - uses: aws-actions/configure-aws-credentials@v3
+        with:
+          role-to-assume: ${{ secrets.GH_ACTIONS_ASSET_ROLE_ARN }}
+          role-session-name: upload-assets
+          aws-region: "eu-west-2"
+      - name: Upload static assets
+        run: |
+          aws s3 cp --recursive assets/public "s3://${{ secrets.ASSET_BUCKET_NAME }}/${{ github.sha }}"
+      - uses: aws-actions/configure-aws-credentials@v3
         with:
           role-to-assume: ${{ secrets.GH_ACTIONS_ROLE_ARN }}
           role-session-name: deploy-sam
