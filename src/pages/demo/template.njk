@@ -8,7 +8,7 @@
     <form action="/demo" method="post">
         {{ govukRadios({
             name: "where-do-you-live",
-            value: form['where-do-you-live'] or session['where-do-you-live']['S'],
+            value: form['where-do-you-live'] or session['where-do-you-live'],
             errorMessage: errors['where-do-you-live'],
             fieldset: {
                 legend: {

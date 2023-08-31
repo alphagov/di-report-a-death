@@ -1,27 +1,29 @@
 {% from "govuk/components/summary-list/macro.njk" import govukSummaryList %}
 {% from "govuk/components/button/macro.njk" import govukButton %}
+{% from "govuk/components/radios/macro.njk" import govukRadios %}
+{% from "govuk/components/skip-link/macro.njk" import govukSkipLink %}
 
 {% extends "base.njk" %}
 
 {% block content %}
-<h1 class="govuk-heading-xl">Telling Civil Service Pension Scheme</h1>
+    <h2 class="govuk-heading-l">Telling Civil Service Pension Scheme</h2>
 
-<p class="govuk-body">We can tell Civil Service Pension Scheme about the death.
-This is to find out whether the person had a Civil Service Pension, and to update relevant records and pension payments.</p>
+    <p class="govuk-body">We can tell Civil Service Pension Scheme about the death.
+        This is to find out whether the person had a Civil Service Pension, and to update relevant records and pension
+        payments.</p>
 
-<h2 class="govuk-heading-m">Tell Civil Service Pension Scheme about the death?</h2>
-
-<form action="/civil-service-pension" method="post" novalidate>
+    <form action="/civil-service-pension" method="post" novalidate>
 
         {{ govukRadios({
+            classes: "govuk-radios--inline",
             name: "tell-civil-service-pension",
-            value: form['tell-civil-service-pension'] or session['tell-civil-service-pension']['S'],
+            value: form['tell-civil-service-pension'] or session['tell-civil-service-pension'],
             errorMessage: errors['tell-civil-service-pension'],
             fieldset: {
                 legend: {
                     text: "Tell Civil Service Pension Scheme about the death?",
                     isPageHeading: false,
-                    classes: "govuk-fieldset__legend--l"
+                    classes: "govuk-fieldset__legend--m"
                 }
             },
             items: [
@@ -36,13 +38,10 @@ This is to find out whether the person had a Civil Service Pension, and to updat
             ]
         }) }}
 
-
         {{ govukButton({
             text: "Continue",
             preventDoubleClick: true
         }) }}
-
-</form>
-
+    </form>
 
 {% endblock %}

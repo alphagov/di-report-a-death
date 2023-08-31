@@ -1,4 +1,4 @@
-import { APIGatewayProxyEvent, APIGatewayProxyResult } from 'aws-lambda';
+import { APIGatewayProxyEvent, APIGatewayProxyResult, Context } from "aws-lambda";
 import { lambdaHandler } from '../../app';
 import { expect, describe, it } from '@jest/globals';
 
@@ -11,7 +11,7 @@ describe('Unit test for app handler', function () {
             isBase64Encoded: false,
             multiValueHeaders: {},
             multiValueQueryStringParameters: {},
-            path: '/hello',
+            path: '/civil-service-pension',
             pathParameters: {},
             queryStringParameters: {},
             requestContext: {
@@ -42,18 +42,18 @@ describe('Unit test for app handler', function () {
                     userAgent: '',
                     userArn: '',
                 },
-                path: '/hello',
+                path: '/civil-service-pension',
                 protocol: 'HTTP/1.1',
                 requestId: 'c6af9ac6-7b61-11e6-9a41-93e8deadbeef',
                 requestTimeEpoch: 1428582896000,
                 resourceId: '123456',
-                resourcePath: '/hello',
+                resourcePath: '/civil-service-pension',
                 stage: 'dev',
             },
             resource: '',
             stageVariables: {},
         };
-        const result: APIGatewayProxyResult = await lambdaHandler(event);
+        const result: APIGatewayProxyResult = await lambdaHandler(event, { }  as Context);
 
         expect(result.statusCode).toEqual(200);
         expect(result.headers && result.headers['Content-Type']).toEqual('text/html');

@@ -21,12 +21,29 @@
       actions: {
         items: [
           {
-            href: "#",
+            href: "/demo",
             text: "Change",
             visuallyHiddenText: "name"
           }
         ]
       }
+    },
+    {
+      key: {
+      text: "Telling Civil Service Pension Scheme"
+    },
+      value: {
+      text: mapping['tell-civil-service-pension'][session["tell-civil-service-pension"]]
+    },
+      actions: {
+      items: [
+        {
+          href: "/civil-service-pension",
+          text: "Change",
+          visuallyHiddenText: "name"
+        }
+      ]
+    }
     }
   ]
 }) }}

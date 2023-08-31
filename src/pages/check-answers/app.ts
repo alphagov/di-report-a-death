@@ -31,6 +31,10 @@ const get = async (event: APIGatewayProxyEvent): Promise<APIGatewayProxyResult> 
                     'northern-ireland': 'Northern Ireland',
                     wales: 'Wales',
                 },
+                'tell-civil-service-pension': {
+                    yes: 'Yes',
+                    no: 'No',
+                }
             },
         });
     } catch (err) {

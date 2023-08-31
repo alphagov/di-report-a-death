@@ -7,10 +7,7 @@ import { withErrorHandling } from './common/routing';
 import { includes, TellCivilServicePension } from './common/answer';
 
 const form_key: keyof TellCivilServicePension = 'tell-civil-service-pension';
-const valid_options: ReadonlyArray<TellCivilServicePension['tell-civil-service-pension']> = [
-    'yes',
-    'no',
-];
+const valid_options: ReadonlyArray<TellCivilServicePension['tell-civil-service-pension']> = ['yes', 'no'];
 
 export const lambdaHandler = withErrorHandling(async (event) => {
     const method = event.httpMethod.toUpperCase();
@@ -31,7 +28,9 @@ export const lambdaHandler = withErrorHandling(async (event) => {
 const get = async (event: APIGatewayProxyEvent): Promise<APIGatewayProxyResult> => {
     const session = await getSession(event);
     try {
-        return renderAsHtmlResponse(event, 'template.njk', { session });
+        return renderAsHtmlResponse(event, 'template.njk', {
+            session,
+        });
     } catch (err) {
         console.log(err);
         return {
@@ -66,7 +65,7 @@ const processForm =
         }
 
         if (!(form[form_key] && includes(valid_options, form[form_key]))) {
-            errors[form_key] = { text: 'Select the country where you live' };
+            errors[form_key] = { text: 'Choose either Yes, No or Skip for now' };
             return renderPageWithErrors();
         }
         await writeSessionField(event, form_key, form[form_key]);
