@@ -39,7 +39,13 @@ clean-local:
 upload-assets-dev: FORCE
 	scripts/upload-assets-dev.sh
 
-deploy: all upload-assets-dev
+deploy-dev: all upload-assets-dev
 	sam deploy --parameter-overrides CommitHash=$$(git rev-parse HEAD) Environment=dev
+
+upload-assets: FORCE
+	scripts/upload-assets-dev.sh $$DEV
+
+deploy: all upload-assets
+	sam deploy --config-env dev-$$DEV --parameter-overrides CommitHash=$$DEV\_$$(git rev-parse HEAD) Environment=dev Developer=$$DEV
 
 FORCE: ;
