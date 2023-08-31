@@ -27,33 +27,11 @@ export const lambdaHandler = withErrorHandling(async (event) => {
 
 const get = async (event: APIGatewayProxyEvent): Promise<APIGatewayProxyResult> => {
     const session = await getSession(event);
-    try {
-        return renderAsHtmlResponse(event, 'template.njk', {
-            session,
-        });
-    } catch (err) {
-        console.log(err);
-        return {
-            statusCode: 500,
-            body: JSON.stringify({
-                message: 'some error happened',
-            }),
-        };
-    }
+    return renderAsHtmlResponse(event, 'template.njk', { session });
 };
 
 const post = (event: APIGatewayProxyEvent): GatewayResult => {
-    try {
-        return parseForm(event, processForm(event));
-    } catch (err) {
-        console.log(err);
-        return {
-            statusCode: 500,
-            body: JSON.stringify({
-                message: err,
-            }),
-        };
-    }
+    return parseForm(event, processForm(event));
 };
 
 const processForm =

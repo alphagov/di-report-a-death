@@ -6,28 +6,11 @@
 {% block content %}
 <h1 class="govuk-heading-xl">Check your answers</h1>
 
-<h2 class="govuk-heading-m">Personal details</h2>
+<h2 class="govuk-heading-m">Pensions for public sector jobs</h2>
 
 {{ govukSummaryList({
   classes: 'govuk-!-margin-bottom-9',
   rows: [
-    {
-      key: {
-        text: "Where do you live?"
-      },
-      value: {
-        text: mapping['where-do-you-live'][session["where-do-you-live"]]
-      },
-      actions: {
-        items: [
-          {
-            href: "/demo",
-            text: "Change",
-            visuallyHiddenText: "name"
-          }
-        ]
-      }
-    },
     {
       key: {
       text: "Telling Civil Service Pension Scheme"
@@ -58,7 +41,7 @@
   <input type="hidden" name="answers-checked" value="true">
 
   {{ govukButton({
-      text: "Accept and send"
+      text: "Submit"
   }) }}
 
 </form>
