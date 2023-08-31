@@ -4,47 +4,78 @@
 {% extends "base.njk" %}
 
 {% block content %}
-<h1 class="govuk-heading-xl">Check your answers</h1>
+    <h1 class="govuk-heading-xl">Check your answers</h1>
 
-<h2 class="govuk-heading-m">Personal details</h2>
+    <p class="govuk-body">Check that the information on this page is correct.</p>
 
-{{ govukSummaryList({
-  classes: 'govuk-!-margin-bottom-9',
-  rows: [
-    {
-      key: {
-        text: "Where do you live?"
-      },
-      value: {
-        text: mapping['where-do-you-live'][session["where-do-you-live"]]
-      },
-      actions: {
-        items: [
-          {
-            href: "#",
-            text: "Change",
-            visuallyHiddenText: "name"
-          }
+    <h2 class="govuk-heading-m">Pensions for public sector jobs</h2>
+
+    {{ govukSummaryList({
+        classes: 'govuk-!-margin-bottom-9',
+        rows: [
+            {
+                key: {
+                text: "National Insurance number"
+            },
+                value: {
+                text: mapping['nino'][session["nino"]]
+            },
+                actions: {
+                items: [
+                    {
+                        href: "/nino",
+                        text: "Change",
+                        visuallyHiddenText: "Allows the national insurance number to be changed"
+                    }
+                ]
+            }
+            },
+            {
+                key: {
+                text: "Pensions providers to tell"
+            },
+                value: {
+                text: mapping['pension-providers'][session["pension-providers"]]
+            },
+                actions: {
+                items: [
+                    {
+                        href: "/inform-pension-providers",
+                        text: "Change",
+                        visuallyHiddenText: "Allows the pension providers to be informed to be changed"
+                    }
+                ]
+            }
+            },
+            {
+                key: {
+                text: "Telling Civil Service Pension Scheme"
+            },
+                value: {
+                text: mapping['tell-civil-service-pension'][session["tell-civil-service-pension"]]
+            },
+                actions: {
+                items: [
+                    {
+                        href: "/civil-service-pension",
+                        text: "Change",
+                        visuallyHiddenText: "Allows the response to tell the civil service pension scheme to be changed"
+                    }
+                ]
+            }
+            }
         ]
-      }
-    }
-  ]
-}) }}
+    }) }}
 
-<h2 class="govuk-heading-m">Now send your application</h2>
+    <form action="/check-answers" method="post" novalidate>
 
-<p class="govuk-body">By submitting this application you are confirming that, to the best of your knowledge, the
-  details you are providing are correct.</p>
+        <input type="hidden" name="answers-checked" value="true">
 
-<form action="/check-answers" method="post" novalidate>
+        {{ govukButton({
+            text: "Submit"
+        }) }}
 
-  <input type="hidden" name="answers-checked" value="true">
-
-  {{ govukButton({
-      text: "Accept and send"
-  }) }}
-
-</form>
+    </form>
 
 
 {% endblock %}

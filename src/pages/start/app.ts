@@ -24,6 +24,6 @@ const get = async (event: APIGatewayProxyEvent) => renderAsHtmlResponse(event, '
 const post = async (event: APIGatewayProxyEvent): Promise<APIGatewayProxyResult> => {
     const response = await checkOrCreateSessionId(event);
     response.statusCode = 303;
-    response.headers = { ...response.headers, location: '/demo' };
+    response.headers = { ...response.headers, location: '/check-answers' };
     return response;
 };
