@@ -12,3 +12,9 @@ updates:
     commit-message:
       prefix: "RAD-NONE: "
     versioning-strategy: increase
+  - package-ecosystem: github-actions
+    directory: "/"
+    schedule:
+      interval: daily
+    commit-message:
+      prefix: "RAD-NONE: "
