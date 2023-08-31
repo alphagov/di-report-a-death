@@ -141,6 +141,11 @@ Resources:
           IpProtocol: tcp
           FromPort: 443
           ToPort: 443
+        - CidrIp: 0.0.0.0/0
+          Description: Allow outbound HTTPS traffic to Internet - The Network Firewall rules and route tables will prevent access to anything other than the allowed rules of our VPC
+          FromPort: 443
+          IpProtocol: tcp
+          ToPort: 443
 
   DeveloperHostedZone:
     Type: AWS::Route53::HostedZone
