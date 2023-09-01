@@ -48,7 +48,8 @@ const get = async (event: APIGatewayProxyEvent): Promise<APIGatewayProxyResult> 
     }
 };
 
-const post = (event: APIGatewayProxyEvent): APIGatewayProxyResult => {
+// eslint-disable-next-line @typescript-eslint/no-unused-vars
+const post = (_event: APIGatewayProxyEvent): APIGatewayProxyResult => {
     try {
         return {
             statusCode: 303,
