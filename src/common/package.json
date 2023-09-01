@@ -3,6 +3,11 @@
   "version": "1.0.0",
   "description": "This is just for code completion in common",
   "license": "MIT",
+  "scripts": {
+    "unit": "jest --passWithNoTests",
+    "compile": "tsc",
+    "test": "npm run compile && npm run unit"
+  },
   "devDependencies": {
     "@types/aws-lambda": "^8.10.92",
     "@types/jest": "^29.5.4",

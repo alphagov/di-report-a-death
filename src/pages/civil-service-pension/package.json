@@ -3,7 +3,7 @@
   "version": "1.0.0",
   "main": "app.js",
   "scripts": {
-    "unit": "jest",
+    "unit": "jest --passWithNoTests",
     "compile": "tsc",
     "test": "npm run compile && npm run unit"
   },

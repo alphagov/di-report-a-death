@@ -18,7 +18,8 @@ export function renderAsHtmlResponse(
     };
 }
 
-function render(templateName: string, templateVars: object, event: APIGatewayProxyEvent): string {
+// eslint-disable-next-line @typescript-eslint/no-unused-vars
+function render(templateName: string, templateVars: object, _event: APIGatewayProxyEvent): string {
     const nunjucks = configure(['.', './common/templates', '../../node_modules/govuk-frontend/']);
     nunjucks.addFilter('summariseErrors', summariseErrors);
 

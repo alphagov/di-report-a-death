@@ -10,6 +10,7 @@
   ],
   "scripts": {
     "lint": "eslint '**/*.ts' --quiet --fix",
+    "check-lint": "eslint '**/*.ts'",
     "build-sass": "rm -rf ../assets/public/style.css && sass --load-path=node_modules/govuk-frontend --no-source-map --quiet-deps ./common/styles/application.scss ../assets/public/styles.css --style compressed",
     "bundle": "esbuild common/scripts/app.js --bundle --minify --sourcemap --outfile=../assets/public/app.js"
   },

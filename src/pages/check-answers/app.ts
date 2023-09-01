@@ -34,7 +34,7 @@ const get = async (event: APIGatewayProxyEvent): Promise<APIGatewayProxyResult> 
                 'tell-civil-service-pension': {
                     yes: 'Yes',
                     no: 'No',
-                }
+                },
             },
         });
     } catch (err) {
