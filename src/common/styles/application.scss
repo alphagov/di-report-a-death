@@ -26,6 +26,24 @@ $govuk-assets-path: "./" !default;
 @import "govuk/components/table/table";
 @import "govuk/components/warning-text/warning-text";
 
+@import "timeout-warning";
+@import "tasklist";
+
 .hide {
   display: none;
 }
+
+.blue-panel {
+  color: govuk-colour("white");
+  background-color: $govuk-brand-colour;
+  @include govuk-responsive-padding(2, "top");
+  @include govuk-responsive-padding(4, "left");
+  @include govuk-responsive-padding(4, "right");
+  @include govuk-responsive-padding(1, "bottom");
+  @include govuk-responsive-margin(6, "bottom");
+
+  .govuk-body {
+    color: govuk-colour("white");
+  }
+}
+

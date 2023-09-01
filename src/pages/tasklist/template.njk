@@ -1,0 +1,84 @@
+{% extends "base.njk" %}
+
+{% block content %}
+<h1 class="govuk-heading-xl">Steps to complete</h1>
+<div class="blue-panel">
+  <p class="govuk-body">
+    If you’re inactive for more than 2 hours, we’ll delete any information you’ve entered that has not been
+    saved. This is for security reasons.
+  </p>
+</div>
+<p class="govuk-body">You do not need to have all the information (for example, their driving licence number) with
+  you right now.</p>
+<p class="govuk-body">You can save your progress and fill in any missing information later.</p>
+
+<ol class="govuk-task-list">
+  <li>
+    <h2 class="govuk-task-list__section">
+      <span class="govuk-task-list__section-number">5. </span> Pensions for public sector jobs
+    </h2>
+    <ul class="govuk-task-list__items">
+      <li class="govuk-task-list__item">
+          <span class="govuk-task-list__task-name">
+            <a class="govuk-link" href="#" aria-describedby="national-insurance-status">
+              National Insurance number
+            </a>
+          </span>
+        {% if session['national-insurance-number'] %}
+          <strong class="govuk-tag govuk-task-list__tag" id="national-insurance-status">
+            Completed
+          </strong>
+        {% else %}
+          <strong class="govuk-tag govuk-tag--grey govuk-task-list__tag" id="national-insurance-status">
+            Not started
+          </strong>
+        {% endif %}
+      </li>
+      <li class="govuk-task-list__item">
+        <span class="govuk-task-list__task-name">
+          {% if publicSectorPensionStatus === 'cannot-start-yet' %}
+            Public sector pensions
+          {% else %}
+            <a class="govuk-link" href="/public-sector-pensions" aria-describedby="public-sector-pensions-status">
+              Public sector pensions
+            </a>
+          {% endif %}
+        </span>
+        {% if publicSectorPensionStatus === 'cannot-start-yet' %}
+          <strong class="govuk-tag govuk-tag--grey govuk-task-list__tag" id="public-sector-pensions-status">
+            Cannot start yet
+          </strong>
+        {% elseif publicSectorPensionStatus === 'not-started' %}
+          <strong class="govuk-tag govuk-tag--grey govuk-task-list__tag" id="public-sector-pensions-status">
+            Not started
+          </strong>
+        {% elseif publicSectorPensionStatus === 'in-progress' %}
+        <strong class="govuk-tag govuk-tag--blue govuk-task-list__tag" id="public-sector-pensions-status">
+          In progress
+        </strong>
+        {% else %}
+          <strong class="govuk-tag govuk-task-list__tag" id="public-sector-pensions-status">
+            Completed
+          </strong>
+        {% endif %}
+      </li>
+    </ul>
+  </li>
+
+  <li>
+    <h2 class="govuk-task-list__section">
+      <span class="govuk-task-list__section-number">8. </span> Check and submit
+    </h2>
+    <ul class="govuk-task-list__items">
+      <li class="govuk-task-list__item">
+          <span class="govuk-task-list__task-name">
+            Check your answers
+          </span>
+        <strong class="govuk-tag govuk-tag--grey govuk-task-list__tag" id="submit-pay-status">
+          Cannot start yet
+        </strong>
+      </li>
+    </ul>
+  </li>
+</ol>
+{% endblock %}

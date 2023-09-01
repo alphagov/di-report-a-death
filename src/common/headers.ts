@@ -8,11 +8,13 @@ import { APIGatewayProxyEvent } from 'aws-lambda';
  * later code.
  */
 export function downcaseHeaders(event: APIGatewayProxyEvent) {
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
     if (!(event as any).headersFixed) {
         const headers = Object.keys(event.headers);
         for (const key of headers) {
             event.headers[key.toLowerCase()] = event.headers[key];
         }
+        // eslint-disable-next-line @typescript-eslint/no-explicit-any
         (event as any).headersFixed = true;
     }
 }

@@ -23,6 +23,15 @@ js:
 sass:
 	cd src; npm run build-sass
 
+lint: install
+	cd src; npm run lint
+
+check-lint: install
+	cd src; npm run check-lint
+
+test: install
+	cd src; npm run test --workspaces
+
 es-build:
 	sam build
 

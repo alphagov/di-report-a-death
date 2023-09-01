@@ -1,9 +1,9 @@
 {
-  "name": "authoriser",
+  "name": "tasklist",
   "version": "1.0.0",
   "main": "app.js",
   "scripts": {
-    "unit": "jest --passWithNoTests",
+    "unit": "jest",
     "compile": "tsc",
     "test": "npm run compile && npm run unit"
   },
@@ -13,6 +13,7 @@
     "nunjucks": "^3.2.4"
   },
   "devDependencies": {
+    "@types/jsdom": "^21.1.2",
     "@types/aws-lambda": "^8.10.92",
     "@types/jest": "^29.5.4",
     "@types/node": "^18.17.12",
@@ -21,6 +22,7 @@
     "prettier": "^3.0.3",
     "ts-jest": "^29.0.5",
     "ts-node": "^10.9.1",
-    "typescript": "^5.2.2"
+    "typescript": "^5.2.2",
+    "jsdom": "^22.1.0"
   }
 }
