@@ -309,17 +309,6 @@ Resources:
         EntryPoints:
           - app.ts
 
-  UnauthorizedErrorResponse:
-    Condition: NonProd
-    Type: AWS::ApiGateway::GatewayResponse
-    Properties:
-      RestApiId: !Ref ApiGateway
-      ResponseType: UNAUTHORIZED
-      ResponseParameters:
-        "gatewayresponse.header.WWW-Authenticate": "'Basic'"
-      StatusCode: "401"
-
-
   4xxErrorResponse:
     Type: AWS::ApiGateway::GatewayResponse
     Properties:
