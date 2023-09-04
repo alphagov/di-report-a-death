@@ -318,6 +318,8 @@ Resources:
       ResponseParameters:
         "gatewayresponse.header.WWW-Authenticate": "'Basic'"
       StatusCode: "401"
+      ResponseTemplates:
+        text/html: Authentication required
 
   4xxErrorResponse:
     Type: AWS::ApiGateway::GatewayResponse
