@@ -10,7 +10,11 @@ export interface Form {
 export type FormProcessor = (form: Form) => GatewayResult;
 export type GatewayResult = APIGatewayProxyResult | Promise<APIGatewayProxyResult>;
 
-export function parseForm(event: APIGatewayProxyEvent, onSuccess: FormProcessor): GatewayResult {
+export function parseForm(
+    event: APIGatewayProxyEvent,
+    onSuccess: FormProcessor,
+    allowedFields: string[],
+): GatewayResult {
     downcaseHeaders(event);
 
     if ('application/x-www-form-urlencoded' !== event.headers['content-type']) {
@@ -22,7 +26,8 @@ export function parseForm(event: APIGatewayProxyEvent, onSuccess: FormProcessor)
 
     const form = querystring.parse(event.body || '');
     stripEmptyFields(form);
-    return onSuccess(formToSingleValuesOnly(form));
+    const singleValuedForm = formToSingleValuesOnly(form);
+    return onSuccess(allowedFieldsOnly(singleValuedForm, allowedFields));
 }
 
 function stripEmptyFields(form: ParsedUrlQuery) {
@@ -69,6 +74,15 @@ function formToSingleValuesOnly(form: ParsedUrlQuery): Form {
         }
     }
     return acc;
+}
+
+function allowedFieldsOnly(form: Form, allowedFields: string[]): Form {
+    return Object.keys(form).reduce((acc: Form, key) => {
+        if (allowedFields.includes(key)) {
+            acc[key] = form[key];
+        }
+        return acc;
+    }, {});
 }
 
 export function isOrIncludes(fieldValue: Form[keyof Form], testValue: string): boolean {
