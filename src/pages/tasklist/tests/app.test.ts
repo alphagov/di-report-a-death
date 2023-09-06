@@ -17,7 +17,7 @@ describe('publicSectorPensionStatus', () => {
         expect(
             publicSectorPensionsStatus({
                 ...baseSession,
-                'national-insurance-number': '1',
+                'national-insurance-number-known': 'no',
             }).publicSectorPensionStatus,
         ).toEqual('not-started');
     });
@@ -26,7 +26,7 @@ describe('publicSectorPensionStatus', () => {
         expect(
             publicSectorPensionsStatus({
                 ...baseSession,
-                'national-insurance-number': '1',
+                'national-insurance-number-known': 'no',
                 'pension-providers': 'croydon',
             }).publicSectorPensionStatus,
         ).toEqual('in-progress');
@@ -36,6 +36,7 @@ describe('publicSectorPensionStatus', () => {
         expect(
             publicSectorPensionsStatus({
                 ...baseSession,
+                'national-insurance-number-known': 'yes',
                 'national-insurance-number': '1',
                 'pension-providers': 'croydon',
                 'tell-civil-service-pension': 'yes',

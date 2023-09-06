@@ -1,24 +1,20 @@
 import { APIGatewayProxyEvent, APIGatewayProxyResult } from 'aws-lambda';
 import { renderAsHtmlResponse } from './common/templating';
 import { getSession, updateSession } from './common/session';
+import { withErrorHandling } from './common/routing';
 import { Form, GatewayResult, parseForm } from './common/forms/forms';
 import { ErrorCollection } from './common/forms/errors';
-import { withErrorHandling } from './common/routing';
-import { includes, WhereDoYouLive } from './common/answer';
+import { includes, NationalInsuranceNumber, NationalInsuranceNumberKnown } from './common/answer';
 
-const form_key: keyof WhereDoYouLive = 'where-do-you-live';
-const valid_options: ReadonlyArray<WhereDoYouLive['where-do-you-live']> = [
-    'england',
-    'scotland',
-    'wales',
-    'northern-ireland',
-];
+const nationalInsuranceNumberKnownKey: keyof NationalInsuranceNumberKnown = 'national-insurance-number-known';
+const nationalInsuranceNumberKey: keyof NationalInsuranceNumber = 'national-insurance-number';
+const valid_options: ReadonlyArray<NationalInsuranceNumberKnown['national-insurance-number-known']> = ['yes', 'no'];
 
 export const lambdaHandler = withErrorHandling(async (event) => {
     const method = event.httpMethod.toUpperCase();
     if (method === 'GET') {
         return get(event);
-    } else if (method == 'POST') {
+    } else if (method === 'POST') {
         return post(event);
     } else {
         return {
@@ -32,50 +28,38 @@ export const lambdaHandler = withErrorHandling(async (event) => {
 
 const get = async (event: APIGatewayProxyEvent): Promise<APIGatewayProxyResult> => {
     const session = await getSession(event);
-    try {
-        return renderAsHtmlResponse(event, 'template.njk', { session });
-    } catch (err) {
-        console.log(err);
-        return {
-            statusCode: 500,
-            body: JSON.stringify({
-                message: 'some error happened',
-            }),
-        };
-    }
+    return renderAsHtmlResponse(event, 'template.njk', { session });
 };
 
-const post = (event: APIGatewayProxyEvent): GatewayResult => {
-    try {
-        return parseForm(event, processForm(event), [form_key]);
-    } catch (err) {
-        console.log(err);
-        return {
-            statusCode: 500,
-            body: JSON.stringify({
-                message: err,
-            }),
-        };
-    }
-};
+const post = (event: APIGatewayProxyEvent): GatewayResult =>
+    parseForm(event, processForm(event), [nationalInsuranceNumberKey, nationalInsuranceNumberKnownKey]);
 
-const processForm =
+export const processForm =
     (event: APIGatewayProxyEvent) =>
     async (form: Form): Promise<APIGatewayProxyResult> => {
         const errors: ErrorCollection = {};
+
         function renderPageWithErrors() {
             return renderAsHtmlResponse(event, 'template.njk', { form, errors });
         }
 
-        if (!(form[form_key] && includes(valid_options, form[form_key]))) {
-            errors[form_key] = { text: 'Select the country where you live' };
+        if (
+            !(form[nationalInsuranceNumberKnownKey] && includes(valid_options, form[nationalInsuranceNumberKnownKey]))
+        ) {
+            errors[nationalInsuranceNumberKnownKey] = { text: 'Select an option' };
             return renderPageWithErrors();
         }
+        if (form[nationalInsuranceNumberKnownKey] === 'yes' && !form[nationalInsuranceNumberKey]) {
+            errors[nationalInsuranceNumberKey] = { text: 'Enter a National Insurance number' };
+            return renderPageWithErrors();
+        }
+
+        console.log(JSON.stringify(form));
         await updateSession(event, form);
         return {
             statusCode: 303,
             headers: {
-                location: '/check-answers',
+                location: '/tasklist',
             },
             body: '',
         };
