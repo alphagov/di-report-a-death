@@ -23,7 +23,7 @@ const get = async (event: APIGatewayProxyEvent): Promise<APIGatewayProxyResult> 
 };
 
 export const publicSectorPensionsStatus = (session: Session): { publicSectorPensionStatus: string } => {
-    if (session['national-insurance-number'] === undefined) {
+    if (session['national-insurance-number-known'] === undefined) {
         return { publicSectorPensionStatus: 'cannot-start-yet' };
     }
     if (session['pension-providers'] === undefined) {

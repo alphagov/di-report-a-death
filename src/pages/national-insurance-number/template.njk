@@ -15,7 +15,9 @@
     {% set ninoHtml %}
       {{ govukInput({
         id: "national-insurance-number",
-        name: "nationalInsuranceNumber",
+        name: "national-insurance-number",
+        value: form['national-insurance-number'] or session['national-insurance-number'],
+        errorMessage: errors['national-insurance-number'],
         type: "text",
         autocomplete: "false",
         spellcheck: false,
@@ -30,7 +32,9 @@
     {% endset -%}
 
     {{ govukRadios({
-      name: "nationalInsuranceNumberKnown",
+      name: "national-insurance-number-known",
+      value: form['national-insurance-number-known'] or session['national-insurance-number-known'],
+      errorMessage: errors['national-insurance-number-known'],
       fieldset: {
         legend: {
           text: "Do you know their National Insurance number?",
