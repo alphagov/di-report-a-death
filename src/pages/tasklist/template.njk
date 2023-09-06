@@ -20,11 +20,11 @@
     <ul class="govuk-task-list__items">
       <li class="govuk-task-list__item">
           <span class="govuk-task-list__task-name">
-            <a class="govuk-link" href="#" aria-describedby="national-insurance-status">
+            <a class="govuk-link" href="/national-insurance-number" aria-describedby="national-insurance-status">
               National Insurance number
             </a>
           </span>
-        {% if session['national-insurance-number'] %}
+        {% if session['national-insurance-number-known'] %}
           <strong class="govuk-tag govuk-task-list__tag" id="national-insurance-status">
             Completed
           </strong>

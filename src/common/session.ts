@@ -44,7 +44,7 @@ export async function checkOrCreateSessionId(event: APIGatewayProxyEvent): Promi
     let sessionId: SessionId;
     try {
         sessionId = getSessionId(event);
-        await writeSessionFieldForSessionId(sessionId, 'UpdatedAt', Date.now());
+        await updateSessionWithId(sessionId, { UpdatedAt: Date.now() });
     } catch (e) {
         if (e instanceof Error && e.message === NO_SESSION_ERROR_MESSAGE) {
             const session = createNewSession();
@@ -92,36 +92,24 @@ async function writeNewSession(session: Session) {
     );
 }
 
-export async function writeSessionField(
-    event: APIGatewayProxyEvent,
-    fieldName: keyof Session,
-    fieldValue: Exclude<Session[keyof Session], undefined>,
-): Promise<void> {
+export async function updateSession(event: APIGatewayProxyEvent, partialSession: Partial<Session>) {
     const sessionId = getSessionId(event);
-    await writeSessionFieldForSessionId(sessionId, fieldName, fieldValue);
+    await updateSessionWithId(sessionId, partialSession);
 }
 
-async function writeSessionFieldForSessionId(
-    sessionId: SessionId,
-    fieldName: keyof Session,
-    fieldValue: Session[keyof Session],
-) {
+async function updateSessionWithId(sessionId: SessionId, partialSession: Partial<Session>) {
+    partialSession.UpdatedAt ??= Date.now();
+    const { expressionAttributeNames, expressionAttributeValues, updateExpression } = buildQueryParameters(
+        sessionId,
+        partialSession,
+    );
     try {
-        const updateExpression =
-            fieldName === 'UpdatedAt' ? 'SET #FIELD = :value' : 'SET #FIELD = :value, UpdatedAt = :timestamp';
-        const timestampValue = fieldName === 'UpdatedAt' ? {} : { ':timestamp': Date.now() };
         await dynamo.send(
             new UpdateCommand({
                 TableName: sessionTable,
                 Key: { SessionId: sessionId },
-                ExpressionAttributeNames: {
-                    '#FIELD': fieldName,
-                },
-                ExpressionAttributeValues: {
-                    ':value': fieldValue,
-                    ':id': sessionId,
-                    ...timestampValue,
-                },
+                ExpressionAttributeNames: expressionAttributeNames,
+                ExpressionAttributeValues: expressionAttributeValues,
                 UpdateExpression: updateExpression,
                 ConditionExpression: 'SessionId = :id',
                 ReturnValues: 'NONE',
@@ -134,4 +122,59 @@ async function writeSessionFieldForSessionId(
             throw e;
         }
     }
+}
+
+type ExpressionAttributeNames = Record<string, string>;
+type ExpressionAttributeValues = Record<string, string | number>;
+type UpdateExpression = string;
+type QueryParameters = {
+    expressionAttributeNames: ExpressionAttributeNames;
+    expressionAttributeValues: ExpressionAttributeValues;
+    updateExpression: UpdateExpression;
+};
+
+/**
+ * Generate DynamoDB update query parameters from a partial session object
+ * @param sessionId Primary key of the record to update
+ * @param partialSession Field name: value pairs to update. Undefined values will be removed
+ *
+ * Given a partial session object, construct SET statements for all present values and REMOVE statements for all
+ * undefined values.
+ *
+ * For example, given a sessionId of 1234, and a partial session of {a:1, b:undefined, c: 3}, this will return:
+ * expressionAttributeNames: {'#F0': 'a', '#F1': 'b', '#F2': 'c'}
+ * expressionAttributeValues: {':v0': 1, ':v2': 3}
+ * updateExpression: "SET #F0 = :v0, #F2 = :v2, REMOVE #F1"
+ */
+function buildQueryParameters(sessionId: SessionId, partialSession: Partial<Session>): QueryParameters {
+    const { expressionAttributeNames, expressionAttributeValues, updateAttributes, removeAttributes } = Object.entries(
+        partialSession,
+    ).reduce(
+        (acc, [key, value], idx) => {
+            const fieldName = `#F${idx}`;
+            acc.expressionAttributeNames[fieldName] = key;
+            if (value === undefined) {
+                acc.removeAttributes.push(fieldName);
+            } else {
+                const valueName = `:v${idx}`;
+                acc.expressionAttributeValues[valueName] = value;
+                acc.updateAttributes.push(`${fieldName} = ${valueName}`);
+            }
+            return acc;
+        },
+        {
+            expressionAttributeNames: {} as ExpressionAttributeNames,
+            expressionAttributeValues: { ':id': sessionId } as ExpressionAttributeValues,
+            updateAttributes: [] as string[],
+            removeAttributes: [] as string[],
+        },
+    );
+    const updateExpression = buildUpdateExpression(updateAttributes, removeAttributes);
+    return { expressionAttributeNames, expressionAttributeValues, updateExpression };
+}
+
+function buildUpdateExpression(updateAttributes: string[], removeAttributes: string[]): string {
+    // we can assume that updateAttributes is never empty because we always set UpdatedAt
+    const updateClause = 'SET ' + updateAttributes.join(', ');
+    return [updateClause, removeAttributes.join(', ')].filter((x) => x).join(', REMOVE ');
 }

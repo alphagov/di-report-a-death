@@ -1,6 +1,6 @@
 import { APIGatewayProxyEvent, APIGatewayProxyResult } from 'aws-lambda';
 import { renderAsHtmlResponse } from './common/templating';
-import { getSession, writeSessionField } from './common/session';
+import { getSession, updateSession } from './common/session';
 import { Form, GatewayResult, parseForm } from './common/forms/forms';
 import { ErrorCollection } from './common/forms/errors';
 import { withErrorHandling } from './common/routing';
@@ -47,7 +47,7 @@ const get = async (event: APIGatewayProxyEvent): Promise<APIGatewayProxyResult> 
 
 const post = (event: APIGatewayProxyEvent): GatewayResult => {
     try {
-        return parseForm(event, processForm(event));
+        return parseForm(event, processForm(event), [form_key]);
     } catch (err) {
         console.log(err);
         return {
@@ -71,7 +71,7 @@ const processForm =
             errors[form_key] = { text: 'Select the country where you live' };
             return renderPageWithErrors();
         }
-        await writeSessionField(event, form_key, form[form_key]);
+        await updateSession(event, form);
         return {
             statusCode: 303,
             headers: {
