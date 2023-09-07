@@ -23,17 +23,16 @@ const get = async (event: APIGatewayProxyEvent): Promise<APIGatewayProxyResult> 
     try {
         const session = await getSession(event);
 
-        let providers = {
+        const Providers = {
             war: 'War Pension',
             armed: 'Armed Forces',
-            'armed-compensation': 'Armed Compensation',
             civil: 'Civil Pension',
         };
 
         return renderAsHtmlResponse(event, 'template.njk', {
             session,
             mapping: {
-                'other-pension-providers': session['other-pension-providers']?.map((x: string) => providers[x]),
+                'other-pension-providers': session['other-pension-providers']?.map((provider: string) => (Providers as {[index: string]: string})[provider]),
             },
         });
     } catch (err) {
