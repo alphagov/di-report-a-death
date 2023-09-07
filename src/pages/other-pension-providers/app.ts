@@ -4,10 +4,7 @@ import { getSession, updateSession } from './common/session';
 import { Form, GatewayResult, parseForm } from './common/forms/forms';
 import { ErrorCollection } from './common/forms/errors';
 import { withErrorHandling } from './common/routing';
-import {
-  otherPensionProviderOptions,
-  OtherPensionProviders
-} from "./common/answer";
+import { otherPensionProviderOptions, OtherPensionProviders } from './common/answer';
 
 const otherPensionProvidersKey: keyof OtherPensionProviders = 'other-pension-providers';
 
@@ -28,46 +25,47 @@ export const lambdaHandler = withErrorHandling(async (event) => {
 });
 
 const get = async (event: APIGatewayProxyEvent): Promise<APIGatewayProxyResult> => {
-  const session = await getSession(event);
-  return renderAsHtmlResponse(event, 'template.njk', { session });
+    const session = await getSession(event);
+    return renderAsHtmlResponse(event, 'template.njk', { session });
 };
 
 const post = (event: APIGatewayProxyEvent): GatewayResult =>
-  parseForm(event, processForm(event), [otherPensionProvidersKey]);
+    parseForm(event, processForm(event), [otherPensionProvidersKey]);
 
-const isValid = (options: string[], values: string[]) => values.every(option => {
-  return options.includes(option);
-});
+const isValid = (options: string[], values: string[]) =>
+    values.every((option) => {
+        return options.includes(option);
+    });
 
 export const processForm =
-  (event: APIGatewayProxyEvent) =>
+    (event: APIGatewayProxyEvent) =>
     async (form: Form): Promise<APIGatewayProxyResult> => {
-      const errors: ErrorCollection = {};
+        const errors: ErrorCollection = {};
 
-      function renderPageWithErrors() {
-        return renderAsHtmlResponse(event, 'template.njk', { form, errors });
-      }
+        function renderPageWithErrors() {
+            return renderAsHtmlResponse(event, 'template.njk', { form, errors });
+        }
 
-      let otherPensionProvidersArray = form[otherPensionProvidersKey]?.split(',') || [];
-      if (!(form[otherPensionProvidersKey] && isValid(otherPensionProviderOptions, otherPensionProvidersArray))) {
-        errors[otherPensionProvidersKey] = { text: 'Select at least one pension or None' };
-        return renderPageWithErrors();
-      }
+        let otherPensionProvidersArray = form[otherPensionProvidersKey]?.split(',') || [];
+        if (!(form[otherPensionProvidersKey] && isValid(otherPensionProviderOptions, otherPensionProvidersArray))) {
+            errors[otherPensionProvidersKey] = { text: 'Select at least one pension or None' };
+            return renderPageWithErrors();
+        }
 
-      const otherPensionProviders = new OtherProviders();
-      otherPensionProviders[otherPensionProvidersKey] = otherPensionProvidersArray;
+        const otherPensionProviders = new OtherProviders();
+        otherPensionProviders[otherPensionProvidersKey] = otherPensionProvidersArray;
 
-      // @ts-ignore
-      await updateSession(event, otherPensionProviders);
-      return {
-        statusCode: 303,
-        headers: {
-          location: '/tasklist',
-        },
-        body: '',
-      };
+        // @ts-ignore
+        await updateSession(event, otherPensionProviders);
+        return {
+            statusCode: 303,
+            headers: {
+                location: '/tasklist',
+            },
+            body: '',
+        };
     };
 
 class OtherProviders {
-  'other-pension-providers': string[];
+    'other-pension-providers': string[];
 }
