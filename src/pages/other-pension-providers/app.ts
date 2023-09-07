@@ -46,7 +46,7 @@ export const processForm =
             return renderAsHtmlResponse(event, 'template.njk', { form, errors });
         }
 
-        let otherPensionProvidersArray = form[otherPensionProvidersKey]?.split(',') || [];
+        const otherPensionProvidersArray = form[otherPensionProvidersKey]?.split(',') || [];
         if (!(form[otherPensionProvidersKey] && isValid(otherPensionProviderOptions, otherPensionProvidersArray))) {
             errors[otherPensionProvidersKey] = { text: 'Select at least one pension or None' };
             return renderPageWithErrors();
