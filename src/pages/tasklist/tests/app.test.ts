@@ -39,7 +39,7 @@ describe('publicSectorPensionStatus', () => {
                 'national-insurance-number-known': 'yes',
                 'national-insurance-number': '1',
                 'pension-providers': 'croydon',
-                'tell-civil-service-pension': 'yes',
+                'other-pension-providers': ['civil'],
             }).publicSectorPensionStatus,
         ).toEqual('completed');
     });
