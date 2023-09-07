@@ -5,10 +5,10 @@ import { Form, GatewayResult, parseForm } from './common/forms/forms';
 import { ErrorCollection } from './common/forms/errors';
 import { withErrorHandling } from './common/routing';
 import {
+  otherPensionProviderOptions,
   OtherPensionProviders
 } from "./common/answer";
 
-const otherPensionProviderOptions = [ 'civil', 'armed', 'armed-compensation', 'war', 'none' ];
 const otherPensionProvidersKey: keyof OtherPensionProviders = 'other-pension-providers';
 
 export const lambdaHandler = withErrorHandling(async (event) => {

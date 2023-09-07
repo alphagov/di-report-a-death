@@ -13,4 +13,14 @@ export type BooleanQuestion<T extends string> = { [key in T]: 'yes' | 'no' };
 export type PensionProviders = { 'pension-providers': 'croydon' | 'sutton' };
 export type NationalInsuranceNumberKnown = BooleanQuestion<'national-insurance-number-known'>;
 export type NationalInsuranceNumber = { 'national-insurance-number': string };
-export type OtherPensionProviders = { 'other-pension-providers': string[] };
+export type OtherPensionProviders = { 'other-pension-providers': string };
+
+export const otherPensionProviderOptions = [ 'civil', 'armed', 'armed-compensation', 'war', 'none' ];
+
+export const OtherPensionProvidersMap: {[index: string]: string} = {
+    war: 'War Pensions Scheme',
+    armed: 'Armed Forces Pension Scheme',
+    civil: 'Civil Service Pension Scheme',
+    'armed-compensation': 'Armed Forces Compensation Scheme',
+    none: 'None',
+};
