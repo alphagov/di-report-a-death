@@ -23,7 +23,7 @@ export const lambdaHandler = withErrorHandling(async (event) => {
 const get = async (event: APIGatewayProxyEvent): Promise<APIGatewayProxyResult> => {
     try {
         const session = await getSession(event);
-        const otherPensionsSession = session['other-pension-providers'] as unknown as Array<string>;
+        const otherPensionsSession = session['other-pension-providers'] || [];
         const providers = otherPensionsSession.map((provider) => OtherPensionProvidersMap[provider]);
 
         return renderAsHtmlResponse(event, 'template.njk', {
