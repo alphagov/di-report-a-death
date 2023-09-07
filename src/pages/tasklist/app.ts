@@ -26,10 +26,10 @@ export const publicSectorPensionsStatus = (session: Session): { publicSectorPens
     if (session['national-insurance-number-known'] === undefined) {
         return { publicSectorPensionStatus: 'cannot-start-yet' };
     }
-    if (session['pension-providers'] === undefined) {
+    if (session['pension-providers'] === undefined && session['other-pension-providers'] == undefined) {
         return { publicSectorPensionStatus: 'not-started' };
     }
-    if (session['pension-providers'] && session['tell-civil-service-pension']) {
+    if (session['pension-providers'] && session['other-pension-providers']) {
         return { publicSectorPensionStatus: 'completed' };
     }
     return { publicSectorPensionStatus: 'in-progress' };

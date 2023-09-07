@@ -386,49 +386,6 @@ Resources:
         Sourcemap: true
         EntryPoints:
           - app.ts
-  DemoFunction:
-    Type: AWS::Serverless::Function
-    Connectors:
-      SessionTable:
-        Properties:
-          Destination:
-            Id: SessionTable
-          Permissions:
-            - Read
-            - Write
-    Properties:
-      # checkov:skip=CKV_AWS_115: Not yet ready to set concurrent execution limit
-      # checkov:skip=CKV_AWS_116: No DLQ needed for these functions
-      # checkov:skip=CKV_AWS_117: VPC settings are set globally.
-      CodeUri: src/pages/demo/
-      Handler: app.lambdaHandler
-      Runtime: nodejs18.x
-      Events:
-        Get:
-          Type: Api
-          Properties:
-            RestApiId: !Ref ApiGateway
-            Path: /demo
-            Method: get
-        Post:
-          Type: Api
-          Properties:
-            RestApiId: !Ref ApiGateway
-            Path: /demo
-            Method: post
-      Tags:
-        CheckovRulesToSkip: CKV_AWS_115.CKV_AWS_116.CKV_AWS_117
-    Metadata:
-      BuildMethod: esbuild
-      BuildProperties:
-        Minify: true
-        Target: es2020
-        External:
-        - "@aws-sdk/client-dynamodb"
-        - "@aws-sdk/lib-dynamodb"
-        Sourcemap: true
-        EntryPoints:
-        - app.ts
   TasklistFunction:
     Type: AWS::Serverless::Function
     Connectors:
@@ -548,8 +505,8 @@ Resources:
         EntryPoints:
           - app.ts
 
-  # Check Civil Service Pension Page
-  CivilServicePensionFunction:
+  # Other Pension Providers Page
+  OtherPensionProvidersFunction:
     Type: AWS::Serverless::Function
     Connectors:
       SessionTable:
@@ -563,7 +520,7 @@ Resources:
       # checkov:skip=CKV_AWS_115: Not yet ready to set concurrent execution limit
       # checkov:skip=CKV_AWS_116: No DLQ needed for these functions
       # checkov:skip=CKV_AWS_117: VPC settings are set globally.
-      CodeUri: src/pages/civil-service-pension/
+      CodeUri: src/pages/other-pension-providers/
       Handler: app.lambdaHandler
       Runtime: nodejs18.x
       Events:
@@ -571,13 +528,13 @@ Resources:
           Type: Api
           Properties:
             RestApiId: !Ref ApiGateway
-            Path: /civil-service-pension
+            Path: /other-pension-providers
             Method: get
         Post:
           Type: Api
           Properties:
             RestApiId: !Ref ApiGateway
-            Path: /civil-service-pension
+            Path: /other-pension-providers
             Method: post
       Tags:
         CheckovRulesToSkip: CKV_AWS_115.CKV_AWS_116.CKV_AWS_117

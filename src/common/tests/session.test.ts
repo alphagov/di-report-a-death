@@ -22,19 +22,19 @@ describe('updateSession', () => {
         updateSession(event, {
             'national-insurance-number-known': 'no',
             'national-insurance-number': undefined,
-            'tell-civil-service-pension': 'yes',
+            'other-pension-providers': 'war',
         });
         const updateCommand: UpdateCommand = dynamoMock.calls()[0].args[0] as unknown as UpdateCommand;
         expect(updateCommand.input.ExpressionAttributeNames).toEqual({
             '#F0': 'national-insurance-number-known',
             '#F1': 'national-insurance-number',
-            '#F2': 'tell-civil-service-pension',
+            '#F2': 'other-pension-providers',
             '#F3': 'UpdatedAt',
         });
         expect(updateCommand.input.ExpressionAttributeValues).toEqual({
             ':id': '1234',
             ':v0': 'no',
-            ':v2': 'yes',
+            ':v2': 'war',
             ':v3': Date.now(),
         });
         expect(updateCommand.input.UpdateExpression).toEqual('SET #F0 = :v0, #F2 = :v2, #F3 = :v3, REMOVE #F1');

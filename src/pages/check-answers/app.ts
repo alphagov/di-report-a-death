@@ -22,19 +22,18 @@ export const lambdaHandler = withErrorHandling(async (event) => {
 const get = async (event: APIGatewayProxyEvent): Promise<APIGatewayProxyResult> => {
     try {
         const session = await getSession(event);
+
+        let providers = {
+            war: 'War Pension',
+            armed: 'Armed Forces',
+            'armed-compensation': 'Armed Compensation',
+            civil: 'Civil Pension',
+        };
+
         return renderAsHtmlResponse(event, 'template.njk', {
             session,
             mapping: {
-                'where-do-you-live': {
-                    england: 'England',
-                    scotland: 'Scotland',
-                    'northern-ireland': 'Northern Ireland',
-                    wales: 'Wales',
-                },
-                'tell-civil-service-pension': {
-                    yes: 'Yes',
-                    no: 'No',
-                },
+                'other-pension-providers': session['other-pension-providers']?.map((x: string) => providers[x]),
             },
         });
     } catch (err) {
