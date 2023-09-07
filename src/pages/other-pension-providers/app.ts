@@ -55,7 +55,6 @@ export const processForm =
         const otherPensionProviders = new OtherProviders();
         otherPensionProviders[otherPensionProvidersKey] = otherPensionProvidersArray;
 
-        // @ts-ignore
         await updateSession(event, otherPensionProviders);
         return {
             statusCode: 303,
