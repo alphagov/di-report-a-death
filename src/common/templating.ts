@@ -22,6 +22,7 @@ export function renderAsHtmlResponse(
 function render(templateName: string, templateVars: object, _event: APIGatewayProxyEvent): string {
     const nunjucks = configure(['.', './common/templates', '../../node_modules/govuk-frontend/']);
     nunjucks.addFilter('summariseErrors', summariseErrors);
+    nunjucks.addFilter('formatNationalInsuranceNumber', formatNationalInsuranceNumber);
 
     nunjucks.addGlobal('assetPath', process.env.ASSET_PATH);
 
@@ -35,4 +36,11 @@ function summariseErrors(errors: ErrorCollection) {
             href: errors[key].href ?? `#${key}`,
         };
     });
+}
+
+export function formatNationalInsuranceNumber(nationalInsuranceNumber: string | undefined): string | undefined {
+    if (nationalInsuranceNumber === undefined) {
+        return;
+    }
+    return nationalInsuranceNumber.match(/.{1,2}/g)!.join(' ');
 }

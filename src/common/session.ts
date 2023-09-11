@@ -22,7 +22,11 @@ export interface BaseSession {
     Sub?: string;
 }
 
-export type Session = BaseSession & Answer;
+export interface DeceasedDetails {
+    DeceasedName?: string;
+}
+
+export type Session = BaseSession & DeceasedDetails & Answer;
 
 export const NO_SESSION_ERROR_MESSAGE = 'No session.';
 
@@ -68,6 +72,7 @@ function createNewSession() {
         SessionId: randomUUID(),
         CreatedAt: timestamp,
         UpdatedAt: timestamp,
+        DeceasedName: 'John Smith',
     };
     return session;
 }
@@ -125,7 +130,7 @@ async function updateSessionWithId(sessionId: SessionId, partialSession: Partial
 }
 
 type ExpressionAttributeNames = Record<string, string>;
-type ExpressionAttributeValues = Record<string, string | string[] | number>;
+type ExpressionAttributeValues = Record<string, Session[keyof Session]>;
 type UpdateExpression = string;
 type QueryParameters = {
     expressionAttributeNames: ExpressionAttributeNames;
@@ -176,5 +181,5 @@ function buildQueryParameters(sessionId: SessionId, partialSession: Partial<Sess
 function buildUpdateExpression(updateAttributes: string[], removeAttributes: string[]): string {
     // we can assume that updateAttributes is never empty because we always set UpdatedAt
     const updateClause = 'SET ' + updateAttributes.join(', ');
-    return [updateClause, removeAttributes.join(', ')].filter((x) => x).join(', REMOVE ');
+    return [updateClause, removeAttributes.join(', ')].filter((x) => x).join(' REMOVE ');
 }

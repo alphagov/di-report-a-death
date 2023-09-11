@@ -11,10 +11,10 @@ copyGovuk(buildDirs);
 function getFunctionDirs() {
   const dirListing = fs.readdirSync("src/pages");
   const listOfDirs = dirListing.filter((path) =>
-    fs.statSync(`src/pages/${path}`).isDirectory()
+    fs.statSync(`src/pages/${path}`).isDirectory(),
   );
   return listOfDirs.filter((path) =>
-    fs.readdirSync(`src/pages/${path}`).includes("app.ts")
+    fs.readdirSync(`src/pages/${path}`).includes("app.ts"),
   );
 }
 
@@ -26,14 +26,20 @@ function ensureDirExists(path) {
 
 function copyTemplates(funDirs) {
   funDirs.forEach((path) => {
-    try {
-      fs.copyFileSync(
-        `src/pages/${path}/template.njk`,
-        `${srcToBuild(path)}/template.njk`
-      );
-    } catch (_e) {
-      // ignored
-    }
+    const templateFiles = fs
+      .readdirSync(`src/pages/${path}`)
+      .filter((it) => it.endsWith(".njk"));
+    templateFiles.forEach((filename) => {
+      try {
+        fs.copyFileSync(
+          `src/pages/${path}/${filename}`,
+          `${srcToBuild(path)}/${filename}`,
+        );
+      } catch (e) {
+        console.error(e);
+        // ignored
+      }
+    });
   });
 }
 

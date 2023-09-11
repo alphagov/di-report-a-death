@@ -1,0 +1,67 @@
+{% from "govuk/components/button/macro.njk" import govukButton %}
+{% from "govuk/components/checkboxes/macro.njk" import govukCheckboxes %}
+{% from "govuk/components/details/macro.njk" import govukDetails %}
+
+{% extends "base.njk" %}
+
+{% block content %}
+  <h1 class="govuk-heading-xl">Public sector pensions found</h1>
+
+  <p class="govuk-body">We've found the following public sector pensions for {{ session['DeceasedName'] }}.</p>
+
+  <form action="/public-sector-pensions" method="post">
+
+    <input type="hidden" name="template" value="multiple-pensions-found.njk">
+
+    {{ govukCheckboxes({
+      name: "pensions-to-tell",
+      values: form['pensions-to-tell'] or (['none'] if session['pensions-to-tell'] and not session['pensions-to-tell']|length) or session['pensions-to-tell'],
+      errorMessage: errors['pensions-to-tell'],
+      fieldset: {
+        legend: {
+          text: "Select the pension providers you want us to tell",
+          isPageHeading: false,
+          classes: "govuk-fieldset__legend--m"
+        }
+      },
+      items: [
+        {
+          value: "bromley",
+          text: publicSectorPensionsMapping['bromley']
+        },
+        {
+          value: "croydon",
+          text: publicSectorPensionsMapping['croydon']
+        },
+        {
+          value: "nhs",
+          text: publicSectorPensionsMapping['nhs']
+        },
+        {
+          value: "sutton",
+          text: publicSectorPensionsMapping['sutton']
+        },
+        {
+          divider: "or"
+        },
+        {
+          value: "none",
+          text: "None",
+          behaviour: "exclusive"
+        }
+      ]
+    }) }}
+
+
+    {{ govukDetails({
+      summaryText: "If there's a missing pension",
+      text: "If you know they had another public sector pension, contact the relevant pension provider directly."
+    }) }}
+
+    {{ govukButton({
+      text: "Continue",
+      preventDoubleClick: true
+    }) }}
+  </form>
+
+{% endblock %}

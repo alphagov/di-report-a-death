@@ -30,10 +30,10 @@ export const publicSectorPensionsStatus = (session: Session): { publicSectorPens
     if (session['national-insurance-number-known'] === undefined) {
         return { publicSectorPensionStatus: 'cannot-start-yet' };
     }
-    if (session['pension-providers'] === undefined) {
+    if (session['pensions-to-tell'] === undefined) {
         return { publicSectorPensionStatus: 'not-started' };
     }
-    if (session['pension-providers'] && session['other-pension-providers']) {
+    if (session['pensions-to-tell'] && session['other-pension-providers']) {
         return { publicSectorPensionStatus: 'completed' };
     }
     return { publicSectorPensionStatus: 'in-progress' };
@@ -43,12 +43,12 @@ export const checkAnswersStatus = (session: Session): { checkAnswersStatus: stri
     if (session['national-insurance-number-known'] === undefined) {
         return { checkAnswersStatus: 'cannot-start-yet' };
     }
-    if (session['pension-providers'] === undefined && session['other-pension-providers'] == undefined) {
+    if (session['pensions-to-tell'] === undefined && session['other-pension-providers'] == undefined) {
         return { checkAnswersStatus: 'not-started' };
     }
     if (
         session['national-insurance-number-known'] &&
-        session['pension-providers'] &&
+        session['pensions-to-tell'] &&
         session['other-pension-providers']
     ) {
         return { checkAnswersStatus: 'completed' };

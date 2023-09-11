@@ -1,3 +1,4 @@
 [*.njk]
 indent_style = space
 indent_size = 2
+ij_html_quote_style = double

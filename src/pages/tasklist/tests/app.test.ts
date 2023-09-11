@@ -1,6 +1,7 @@
 import { publicSectorPensionsStatus } from '../app';
-import { expect, describe, it } from '@jest/globals';
+import { describe, expect, it } from '@jest/globals';
 import { BaseSession } from 'common/session';
+import { OtherPensionProviderOptions } from 'common/answer';
 
 const baseSession: BaseSession = {
     SessionId: 'a-a-a-a-a-a',
@@ -27,7 +28,7 @@ describe('publicSectorPensionStatus', () => {
             publicSectorPensionsStatus({
                 ...baseSession,
                 'national-insurance-number-known': 'no',
-                'pension-providers': 'croydon',
+                'pensions-to-tell': ['croydon'],
             }).publicSectorPensionStatus,
         ).toEqual('in-progress');
     });
@@ -38,8 +39,8 @@ describe('publicSectorPensionStatus', () => {
                 ...baseSession,
                 'national-insurance-number-known': 'yes',
                 'national-insurance-number': '1',
-                'pension-providers': 'croydon',
-                'other-pension-providers': ['civil'],
+                'pensions-to-tell': ['croydon'],
+                'other-pension-providers': [OtherPensionProviderOptions.civil],
             }).publicSectorPensionStatus,
         ).toEqual('completed');
     });

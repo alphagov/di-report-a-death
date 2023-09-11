@@ -1,0 +1,54 @@
+{% from "govuk/components/button/macro.njk" import govukButton %}
+{% from "govuk/components/details/macro.njk" import govukDetails %}
+{% from "govuk/components/radios/macro.njk" import govukRadios %}
+
+{% extends "base.njk" %}
+
+{% block content %}
+  <h1 class="govuk-heading-xl">Public sector pension found</h1>
+
+{#  TODO: update council name #}
+  <p class="govuk-body">We've found {{ session['DeceasedName'] }}'s Croydon Council pension.</p>
+
+  <form action="/public-sector-pensions" method="post">
+    <input type="hidden" name="template" value="pension-found.njk">
+
+    {{ errors | dump }}
+
+    {{ govukRadios({
+      classes: "govuk-radios--inline",
+      value: form['tell-pension'] or ('yes' if 'croydon' in (session['pensions-to-tell'] or [])) or ('no' if session['pensions-to-tell']),
+      errorMessage: errors['tell-pension'],
+      name: "tell-pension",
+      fieldset: {
+        legend: {
+          text: "Tell Croyden Council pension scheme?",
+          isPageHeading: false,
+          classes: "govuk-fieldset__legend--m"
+        }
+      },
+      items: [
+        {
+          value: "yes",
+          text: "Yes"
+        },
+        {
+          value: "no",
+          text: "No"
+        }
+      ]
+    }) }}
+
+
+    {{ govukDetails({
+      summaryText: "If there's a missing pension",
+      text: "If you know they had another public sector pension, contact the relevant pension provider directly."
+    }) }}
+
+    {{ govukButton({
+      text: "Continue",
+      preventDoubleClick: true
+    }) }}
+  </form>
+
+{% endblock %}

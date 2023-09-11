@@ -1,6 +1,6 @@
 import { APIGatewayProxyEvent, APIGatewayProxyResult } from 'aws-lambda';
 import { renderAsHtmlResponse } from './common/templating';
-import { getSession, updateSession } from './common/session';
+import { getSession, Session, updateSession } from './common/session';
 import { withErrorHandling } from './common/routing';
 import { Form, GatewayResult, parseForm } from './common/forms/forms';
 import { ErrorCollection } from './common/forms/errors';
@@ -37,8 +37,9 @@ const post = (event: APIGatewayProxyEvent): GatewayResult =>
 export const processForm =
     (event: APIGatewayProxyEvent) =>
     async (form: Form): Promise<APIGatewayProxyResult> => {
-        const errors: ErrorCollection = {};
+        const sessionPromise = getSession(event);
 
+        const errors: ErrorCollection = {};
         function renderPageWithErrors() {
             return renderAsHtmlResponse(event, 'template.njk', { form, errors });
         }
@@ -54,12 +55,40 @@ export const processForm =
             return renderPageWithErrors();
         }
 
-        console.log(JSON.stringify(form));
-        await updateSession(event, form);
+        if (form[nationalInsuranceNumberKnownKey] === 'yes') {
+            const nationalInsuranceNumberRegex = /^[A-CEGHJ-PR-TW-Z][A-CEGHJ-NPR-TW-Z][0-9]{6}[A-DFM]?$/;
+            form[nationalInsuranceNumberKey] = form[nationalInsuranceNumberKey]!.toUpperCase().replaceAll(
+                /[^A-Z0-9]/g,
+                '',
+            );
+            if (!form[nationalInsuranceNumberKey].match(nationalInsuranceNumberRegex)) {
+                errors[nationalInsuranceNumberKey] = {
+                    text: 'Enter a valid National Insurance number, like ‘QQ 12 34 56 A’',
+                };
+                return renderPageWithErrors();
+            }
+        }
+
+        const unsetOptions: Partial<Session> = {};
+
+        if (form[nationalInsuranceNumberKnownKey] === 'no') {
+            unsetOptions[nationalInsuranceNumberKey] = undefined;
+        }
+
+        const session = await sessionPromise;
+        if (
+            form[nationalInsuranceNumberKey] &&
+            form[nationalInsuranceNumberKey] !== session[nationalInsuranceNumberKey]
+        ) {
+            // Changed national insurance number so clear pension options
+            unsetOptions['pensions-to-tell'] = undefined;
+        }
+
+        await updateSession(event, { ...form, ...unsetOptions });
         return {
             statusCode: 303,
             headers: {
-                location: '/tasklist',
+                location: '/public-sector-pensions',
             },
             body: '',
         };
