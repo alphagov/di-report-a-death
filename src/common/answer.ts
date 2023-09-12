@@ -6,7 +6,7 @@ export function includes<T extends U, U>(coll: ReadonlyArray<T>, el: U): el is T
 export function allValid<T extends U, U>(options: ReadonlyArray<T>, values: T[]): boolean {
     return values.every((option) => {
         options.includes(option);
-    })
+    });
 }
 
 export type BooleanQuestion<T extends string> = { [key in T]: 'yes' | 'no' };
@@ -24,5 +24,5 @@ export type NationalInsuranceNumber = { 'national-insurance-number': string };
 export type OtherPensionProviders = { 'other-pension-providers': OtherPensionProviderOptions[] };
 
 export type Answer = Partial<
-  NationalInsuranceNumberKnown & NationalInsuranceNumber & PensionProviders & OtherPensionProviders
+    NationalInsuranceNumberKnown & NationalInsuranceNumber & PensionProviders & OtherPensionProviders
 >;
