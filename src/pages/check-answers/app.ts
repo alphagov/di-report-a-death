@@ -2,8 +2,15 @@ import { APIGatewayProxyEvent, APIGatewayProxyResult } from 'aws-lambda';
 import { renderAsHtmlResponse } from './common/templating';
 import { getSession } from './common/session';
 import { withErrorHandling } from './common/routing';
-import { OtherPensionProvidersMap } from './common/answer';
+import { OtherPensionProviderOptions } from "common/answer";
 
+export const OtherPensionProvidersMap: { [k in OtherPensionProviderOptions]: string } = {
+    civil: 'Civil Service Pension Scheme',
+    armed: 'Armed Forces Pension Scheme',
+    compensation: 'Armed Forces Compensation Scheme',
+    war: 'War Pension Scheme',
+    none: 'None',
+}
 export const lambdaHandler = withErrorHandling(async (event) => {
     const method = event.httpMethod.toUpperCase();
     if (method === 'GET') {
@@ -23,13 +30,10 @@ export const lambdaHandler = withErrorHandling(async (event) => {
 const get = async (event: APIGatewayProxyEvent): Promise<APIGatewayProxyResult> => {
     try {
         const session = await getSession(event);
-        const otherPensionsSession = session['other-pension-providers'] || [];
-        const providers = otherPensionsSession.map((provider) => OtherPensionProvidersMap[provider]);
-
         return renderAsHtmlResponse(event, 'template.njk', {
             session,
-            mapping: {
-                'other-pension-providers': providers,
+            answers: {
+                'other-pension-providers': session['other-pension-providers']?.map((provider) => OtherPensionProvidersMap[provider]),
             },
         });
     } catch (err) {

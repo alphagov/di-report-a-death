@@ -5,7 +5,7 @@
 {% extends "base.njk" %}
 
 {% block content %}
-    <h2 class="govuk-heading-l">Telling other pension providers</h2>
+    <h1 class="govuk-heading-l">Telling other pension providers</h1>
 
     <p class="govuk-body">We can also tell the following pension providers about the death.
       This is to find out whether the person had a civil service or army pension,
@@ -22,7 +22,7 @@
             fieldset: {
                 legend: {
                     text: "Select the pension providers you want us to tell",
-                    isPageHeading: true,
+                    isPageHeading: false,
                     classes: "govuk-fieldset__legend--m"
                 }
             },
@@ -39,7 +39,7 @@
                 text: "Armed Forces Pension Scheme"
               },
               {
-                value: "armed-compensation",
+                value: "compensation",
                 text: "Armed Forces Compensation Scheme"
               },
               {

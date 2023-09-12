@@ -4,7 +4,11 @@ import { getSession, updateSession } from './common/session';
 import { Form, GatewayResult, parseForm } from './common/forms/forms';
 import { ErrorCollection } from './common/forms/errors';
 import { withErrorHandling } from './common/routing';
-import { otherPensionProviderOptions, OtherPensionProviders } from './common/answer';
+import {
+  allValid,
+  OtherPensionProviderOptions,
+  OtherPensionProviders
+} from "./common/answer";
 
 const otherPensionProvidersKey: keyof OtherPensionProviders = 'other-pension-providers';
 
@@ -32,10 +36,13 @@ const get = async (event: APIGatewayProxyEvent): Promise<APIGatewayProxyResult> 
 const post = (event: APIGatewayProxyEvent): GatewayResult =>
     parseForm(event, processForm(event), [otherPensionProvidersKey]);
 
-const isValid = (options: string[], values: string[]) =>
-    values.every((option) => {
-        return options.includes(option);
-    });
+const valid_options: ReadonlyArray<OtherPensionProviderOptions> = [
+    OtherPensionProviderOptions.civil,
+    OtherPensionProviderOptions.armed,
+    OtherPensionProviderOptions.compensation,
+    OtherPensionProviderOptions.war,
+    OtherPensionProviderOptions.none,
+];
 
 export const processForm =
     (event: APIGatewayProxyEvent) =>
@@ -46,16 +53,15 @@ export const processForm =
             return renderAsHtmlResponse(event, 'template.njk', { form, errors });
         }
 
-        const otherPensionProvidersArray = form[otherPensionProvidersKey]?.split(',') || [];
-        if (!(form[otherPensionProvidersKey] && isValid(otherPensionProviderOptions, otherPensionProvidersArray))) {
+        const otherPensionProvidersArray = form[otherPensionProvidersKey] || [];
+        if (!(form[otherPensionProvidersKey] && allValid(valid_options, otherPensionProvidersArray))) {
             errors[otherPensionProvidersKey] = { text: 'Select at least one pension or None' };
             return renderPageWithErrors();
         }
 
-        const otherPensionProviders = new OtherProviders();
-        otherPensionProviders[otherPensionProvidersKey] = otherPensionProvidersArray;
-
-        await updateSession(event, otherPensionProviders);
+        await updateSession(event, {
+            'other-pension-providers': otherPensionProvidersArray,
+        });
         return {
             statusCode: 303,
             headers: {
@@ -64,7 +70,3 @@ export const processForm =
             body: '',
         };
     };
-
-class OtherProviders {
-    'other-pension-providers': string[];
-}
