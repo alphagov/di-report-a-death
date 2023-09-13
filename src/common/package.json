@@ -16,7 +16,7 @@
     "ts-node": "^10.9.1",
     "typescript": "^5.2.2",
     "aws-sdk-client-mock":"^3.0.0",
-    "@types/node": "^18.17.14",
+    "@types/node": "^18.17.15",
     "@types/nunjucks": "^3.2.2"
   },
   "dependencies": {
