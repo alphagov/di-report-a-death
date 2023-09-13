@@ -1,6 +1,6 @@
-# Report a Death
+# Report a death
 
-Report a Death will be a citizen facing service aiming to improve the end-to-end experience of dealing with death and
+Report a death will be a citizen facing service aiming to improve the end-to-end experience of dealing with death and
 the government.
 
 ## Overview

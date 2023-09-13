@@ -2,6 +2,7 @@ import { APIGatewayProxyEvent, APIGatewayProxyResult } from 'aws-lambda';
 import { renderAsHtmlResponse } from './common/templating';
 import { getSession } from './common/session';
 import { withErrorHandling } from './common/routing';
+import { OtherPensionProviderOptions, OtherPensionProvidersMap } from './common/answer';
 
 export const lambdaHandler = withErrorHandling(async (event) => {
     const method = event.httpMethod.toUpperCase();
@@ -22,19 +23,15 @@ export const lambdaHandler = withErrorHandling(async (event) => {
 const get = async (event: APIGatewayProxyEvent): Promise<APIGatewayProxyResult> => {
     try {
         const session = await getSession(event);
+
         return renderAsHtmlResponse(event, 'template.njk', {
             session,
-            mapping: {
-                'where-do-you-live': {
-                    england: 'England',
-                    scotland: 'Scotland',
-                    'northern-ireland': 'Northern Ireland',
-                    wales: 'Wales',
-                },
-                'tell-civil-service-pension': {
-                    yes: 'Yes',
-                    no: 'No',
-                },
+            answers: {
+                nino: session['national-insurance-number'],
+                'pension-providers': session['pension-providers'],
+                'other-pension-providers': session['other-pension-providers']?.map(
+                    (provider) => OtherPensionProvidersMap[provider as OtherPensionProviderOptions],
+                ),
             },
         });
     } catch (err) {

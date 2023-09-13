@@ -1,0 +1,43 @@
+{% from "govuk/components/checkboxes/macro.njk" import govukCheckboxes %}
+{% from "govuk/components/button/macro.njk" import govukButton %}
+{% from "govuk/components/details/macro.njk" import govukDetails %}
+
+{% extends "base.njk" %}
+
+{% block content %}
+    <h1 class="govuk-heading-l">Telling other pension providers</h1>
+
+    <p class="govuk-body">We can also tell the following pension providers about the death.
+      This is to find out whether the person had a civil service or army pension,
+      and to update relevant records and pension payments.
+    </p>
+
+    <form action="/other-pension-providers" method="post" novalidate>
+
+        {{ govukCheckboxes({
+            classes: "govuk-radios--inline",
+            name: "other-pension-providers",
+            values: form['other-pension-providers'] or session['other-pension-providers'],
+            errorMessage: errors['other-pension-providers'],
+            fieldset: {
+                legend: {
+                    text: "Select the pension providers you want us to tell",
+                    isPageHeading: false,
+                    classes: "govuk-fieldset__legend--m"
+                }
+            },
+            items: items
+        }) }}
+
+      {{ govukDetails({
+        summaryText: "If there’s a missing pension",
+        text: "If you know they had another public sector pension, contact the relevant pension provider directly."
+      }) }}
+
+        {{ govukButton({
+            text: "Continue",
+            preventDoubleClick: true
+        }) }}
+    </form>
+
+{% endblock %}

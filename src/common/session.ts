@@ -125,7 +125,7 @@ async function updateSessionWithId(sessionId: SessionId, partialSession: Partial
 }
 
 type ExpressionAttributeNames = Record<string, string>;
-type ExpressionAttributeValues = Record<string, string | number>;
+type ExpressionAttributeValues = Record<string, string | string[] | number>;
 type UpdateExpression = string;
 type QueryParameters = {
     expressionAttributeNames: ExpressionAttributeNames;

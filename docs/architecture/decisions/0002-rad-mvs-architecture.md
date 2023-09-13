@@ -1,4 +1,4 @@
-# 2. Report a Death High Level Architecture
+# 2. Report a death High Level Architecture
 
 [Next >>](9999-end.md)
 
@@ -10,7 +10,7 @@ Date: 2023-08-17
 Accepted
 
 ## Context
-Report a Death is built using serverless technologies, as is standard in the Digital Identity programme.
+Report a death is built using serverless technologies, as is standard in the Digital Identity programme.
 
 ## Initial MVS Architecture
 Below is a high level overview of the key components across government services and departments.
