@@ -2,6 +2,7 @@ import { updateSession } from '../session';
 import { APIGatewayProxyEvent } from 'aws-lambda';
 import { DynamoDBDocument, UpdateCommand } from '@aws-sdk/lib-dynamodb';
 import { mockClient } from 'aws-sdk-client-mock';
+import { OtherPensionProviderOptions } from 'common/answer';
 
 const event = { headers: { cookie: 'session=1234' } } as unknown as APIGatewayProxyEvent;
 const dynamoMock = mockClient(DynamoDBDocument);
@@ -22,7 +23,7 @@ describe('updateSession', () => {
         updateSession(event, {
             'national-insurance-number-known': 'no',
             'national-insurance-number': undefined,
-            'other-pension-providers': ['war'],
+            'other-pension-providers': [OtherPensionProviderOptions.war],
         });
         const updateCommand: UpdateCommand = dynamoMock.calls()[0].args[0] as unknown as UpdateCommand;
         expect(updateCommand.input.ExpressionAttributeNames).toEqual({
