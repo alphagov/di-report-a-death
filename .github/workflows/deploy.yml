@@ -23,7 +23,7 @@ jobs:
       - name: Set commit hash
         run: sed -i s/\${CommitHash}/${{ github.sha }}/g template.yaml gateway-error.yaml
       - run: make
-      - uses: aws-actions/configure-aws-credentials@v3
+      - uses: aws-actions/configure-aws-credentials@v4
         with:
           role-to-assume: ${{ secrets.GH_ACTIONS_ASSET_ROLE_ARN }}
           role-session-name: upload-assets
@@ -31,7 +31,7 @@ jobs:
       - name: Upload static assets
         run: |
           aws s3 cp --recursive assets/public "s3://${{ secrets.ASSET_BUCKET_NAME }}/${{ github.sha }}"
-      - uses: aws-actions/configure-aws-credentials@v3
+      - uses: aws-actions/configure-aws-credentials@v4
         with:
           role-to-assume: ${{ secrets.GH_ACTIONS_ROLE_ARN }}
           role-session-name: deploy-sam
