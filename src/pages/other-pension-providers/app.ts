@@ -4,9 +4,23 @@ import { getSession, updateSession } from './common/session';
 import { Form, GatewayResult, parseForm } from './common/forms/forms';
 import { ErrorCollection } from './common/forms/errors';
 import { withErrorHandling } from './common/routing';
-import { allValid, Answer, OtherPensionProviderOptions, OtherPensionProviders } from './common/answer';
+import {
+    includes,
+    OtherPensionProviderOptions,
+    OtherPensionProviders,
+    OtherPensionProvidersMap,
+} from './common/answer';
 
 const otherPensionProvidersKey: keyof OtherPensionProviders = 'other-pension-providers';
+
+const items = [
+    { value: OtherPensionProviderOptions.civil, text: OtherPensionProvidersMap.civil },
+    { value: OtherPensionProviderOptions.armed, text: OtherPensionProvidersMap.armed },
+    { value: OtherPensionProviderOptions.compensation, text: OtherPensionProvidersMap.compensation },
+    { value: OtherPensionProviderOptions.war, text: OtherPensionProvidersMap.war },
+    { divider: 'or' },
+    { value: OtherPensionProviderOptions.none, text: OtherPensionProvidersMap.none, behaviour: 'exclusive' },
+];
 
 export const lambdaHandler = withErrorHandling(async (event) => {
     const method = event.httpMethod.toUpperCase();
@@ -26,19 +40,11 @@ export const lambdaHandler = withErrorHandling(async (event) => {
 
 const get = async (event: APIGatewayProxyEvent): Promise<APIGatewayProxyResult> => {
     const session = await getSession(event);
-    return renderAsHtmlResponse(event, 'template.njk', { session });
+    return renderAsHtmlResponse(event, 'template.njk', { items, session });
 };
 
 const post = (event: APIGatewayProxyEvent): GatewayResult =>
-    parseForm(event, processForm(event), [otherPensionProvidersKey]);
-
-const valid_options: ReadonlyArray<OtherPensionProviderOptions> = [
-    OtherPensionProviderOptions.civil,
-    OtherPensionProviderOptions.armed,
-    OtherPensionProviderOptions.compensation,
-    OtherPensionProviderOptions.war,
-    OtherPensionProviderOptions.none,
-];
+    parseForm(event, processForm(event), ['other-pension-providers']);
 
 export const processForm =
     (event: APIGatewayProxyEvent) =>
@@ -46,12 +52,20 @@ export const processForm =
         const errors: ErrorCollection = {};
 
         function renderPageWithErrors() {
-            return renderAsHtmlResponse(event, 'template.njk', { form, errors });
+            return renderAsHtmlResponse(event, 'template.njk', { form, errors, items });
+        }
+        const otherPensionProvidersArray = form[otherPensionProvidersKey]?.split(',') || [];
+        const validEntries = otherPensionProvidersArray.every((option) => {
+            return includes(Object.values(OtherPensionProviderOptions), option);
+        });
+
+        if (otherPensionProvidersArray.length == 0 || !validEntries) {
+            errors[otherPensionProvidersKey] = { text: 'Select at least one pension or "None"' };
+            return renderPageWithErrors();
         }
 
-        const otherPensionProvidersArray = (form[otherPensionProvidersKey] as Answer['other-pension-providers']) || [];
-        if (!(form[otherPensionProvidersKey] && allValid(valid_options, otherPensionProvidersArray))) {
-            errors[otherPensionProvidersKey] = { text: 'Select at least one pension or None' };
+        if (includes(otherPensionProvidersArray, 'none') && otherPensionProvidersArray.length > 1) {
+            errors[otherPensionProvidersKey] = { text: 'Please select either "None" or one other pension' };
             return renderPageWithErrors();
         }
 
