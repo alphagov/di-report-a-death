@@ -4,7 +4,7 @@ import { getSession, updateSession } from './common/session';
 import { Form, GatewayResult, parseForm } from './common/forms/forms';
 import { ErrorCollection } from './common/forms/errors';
 import { withErrorHandling } from './common/routing';
-import { allValid, OtherPensionProviderOptions, OtherPensionProviders } from './common/answer';
+import { allValid, Answer, OtherPensionProviderOptions, OtherPensionProviders } from "./common/answer";
 
 const otherPensionProvidersKey: keyof OtherPensionProviders = 'other-pension-providers';
 
@@ -49,7 +49,7 @@ export const processForm =
             return renderAsHtmlResponse(event, 'template.njk', { form, errors });
         }
 
-        const otherPensionProvidersArray = form[otherPensionProvidersKey] as OtherPensionProviderOptions[];
+        const otherPensionProvidersArray = form[otherPensionProvidersKey] as Answer['other-pension-providers'] || []
         if (!(form[otherPensionProvidersKey] && allValid(valid_options, otherPensionProvidersArray))) {
             errors[otherPensionProvidersKey] = { text: 'Select at least one pension or None' };
             return renderPageWithErrors();
