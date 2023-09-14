@@ -26,12 +26,8 @@ const get = async (event: APIGatewayProxyEvent): Promise<APIGatewayProxyResult> 
 
         return renderAsHtmlResponse(event, 'template.njk', {
             session,
-            answers: {
-                nino: session['national-insurance-number'],
-                'pension-providers': session['pension-providers'],
-                'other-pension-providers': session['other-pension-providers']?.map(
-                    (provider) => OtherPensionProvidersMap[provider as OtherPensionProviderOptions],
-                ),
+            mappings: {
+                OtherPensionProvidersMap,
             },
         });
     } catch (err) {

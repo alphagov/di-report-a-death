@@ -10,19 +10,17 @@ export enum OtherPensionProviderOptions {
     armed = 'armed',
     compensation = 'compensation',
     war = 'war',
-    none = 'none',
 }
 export const OtherPensionProvidersMap: { [k in OtherPensionProviderOptions]: string } = {
     civil: 'Civil Service Pension Scheme',
     armed: 'Armed Forces Pension Scheme',
     compensation: 'Armed Forces Compensation Scheme',
     war: 'War Pensions Scheme (compensation scheme for veterans for injuries or illnesses pre 2005)',
-    none: 'None',
 };
 export type PensionProviders = { 'pension-providers': 'croydon' | 'sutton' };
 export type NationalInsuranceNumberKnown = BooleanQuestion<'national-insurance-number-known'>;
 export type NationalInsuranceNumber = { 'national-insurance-number': string };
-export type OtherPensionProviders = { 'other-pension-providers': string[] };
+export type OtherPensionProviders = { 'other-pension-providers': OtherPensionProviderOptions[] };
 
 export type Answer = Partial<
     NationalInsuranceNumberKnown & NationalInsuranceNumber & PensionProviders & OtherPensionProviders

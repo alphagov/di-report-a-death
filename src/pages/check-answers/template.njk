@@ -10,6 +10,16 @@
 
     <h2 class="govuk-heading-m">Pensions for public sector jobs</h2>
 
+    {% set otherPensionProviders %}
+      {% if session['other-pension-providers'] | length %}
+      {% for item in session['other-pension-providers'] %}
+        {{ mappings['OtherPensionProvidersMap'][item] }}<br />
+      {% endfor %}
+      {% else %}
+        None
+      {% endif %}
+    {% endset %}
+
     {{ govukSummaryList({
         classes: 'govuk-!-margin-bottom-9',
         rows: [
@@ -52,14 +62,14 @@
                 text: "Telling Other Service Pension Providers"
             },
                 value: {
-                text: answers["other-pension-providers"]
+                html: otherPensionProviders
             },
                 actions: {
                 items: [
                     {
                         href: "/other-pension-providers",
                         text: "Change",
-                        visuallyHiddenText: "Allows the other pension providers to be changed"
+                        visuallyHiddenText: "other pension providers to tell"
                     }
                 ]
             }
