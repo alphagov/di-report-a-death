@@ -17,7 +17,7 @@
         {{ govukCheckboxes({
             classes: "govuk-radios--inline",
             name: "other-pension-providers",
-            values: form['other-pension-providers'] or session['other-pension-providers'],
+            values: form['other-pension-providers'] or (none if session['other-pension-providers'] and not session['other-pension-providers']|length) or session['other-pension-providers'],
             errorMessage: errors['other-pension-providers'],
             fieldset: {
                 legend: {

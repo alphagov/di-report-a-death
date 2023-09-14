@@ -13,14 +13,9 @@ import {
 
 const otherPensionProvidersKey: keyof OtherPensionProviders = 'other-pension-providers';
 
-const items = [
-    { value: OtherPensionProviderOptions.civil, text: OtherPensionProvidersMap.civil },
-    { value: OtherPensionProviderOptions.armed, text: OtherPensionProvidersMap.armed },
-    { value: OtherPensionProviderOptions.compensation, text: OtherPensionProvidersMap.compensation },
-    { value: OtherPensionProviderOptions.war, text: OtherPensionProvidersMap.war },
-    { divider: 'or' },
-    { value: OtherPensionProviderOptions.none, text: OtherPensionProvidersMap.none, behaviour: 'exclusive' },
-];
+const items: object[] = Object.entries(OtherPensionProvidersMap).map(([value, text]) => ({ value, text }));
+items.push({ divider: 'or' });
+items.push({ value: 'none', text: 'None', behaviour: 'exclusive' });
 
 export const lambdaHandler = withErrorHandling(async (event) => {
     const method = event.httpMethod.toUpperCase();
@@ -55,11 +50,8 @@ export const processForm =
             return renderAsHtmlResponse(event, 'template.njk', { form, errors, items });
         }
         const otherPensionProvidersArray = form[otherPensionProvidersKey]?.split(',') || [];
-        const validEntries = otherPensionProvidersArray.every((option) => {
-            return includes(Object.values(OtherPensionProviderOptions), option);
-        });
 
-        if (otherPensionProvidersArray.length == 0 || !validEntries) {
+        if (otherPensionProvidersArray.length == 0 || !optionsAreValid(otherPensionProvidersArray)) {
             errors[otherPensionProvidersKey] = { text: 'Select at least one pension or "None"' };
             return renderPageWithErrors();
         }
@@ -67,6 +59,10 @@ export const processForm =
         if (includes(otherPensionProvidersArray, 'none') && otherPensionProvidersArray.length > 1) {
             errors[otherPensionProvidersKey] = { text: 'Please select either "None" or one other pension' };
             return renderPageWithErrors();
+        }
+
+        if (includes(otherPensionProvidersArray, 'none')) {
+            otherPensionProvidersArray.pop();
         }
 
         await updateSession(event, {
@@ -80,3 +76,11 @@ export const processForm =
             body: '',
         };
     };
+
+const optionsAreValid = (
+    otherPensionProvidersArray: string[],
+): otherPensionProvidersArray is OtherPensionProviderOptions[] => {
+    return otherPensionProvidersArray.every((option) => {
+        return includes(Object.values(OtherPensionProviderOptions), option);
+    });
+};

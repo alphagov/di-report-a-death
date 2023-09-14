@@ -1,0 +1,21 @@
+{% from "govuk/components/button/macro.njk" import govukButton %}
+
+{% extends "base.njk" %}
+
+{% block content %}
+  <h1 class="govuk-heading-xl">No public sector pension found</h1>
+
+  <p class="govuk-body">We’ve not found a matching public sector pension.</p>
+  <p class="govuk-body">If you believe they had a public sector pension, contact the relevant pension provider or the
+    organisation they worked for.</p>
+
+  <form action="/public-sector-pensions" method="post">
+    <input type="hidden" name="template" value="no-pension-found.njk">
+
+    {{ govukButton({
+      text: "Continue",
+      preventDoubleClick: true
+    }) }}
+  </form>
+
+{% endblock %}

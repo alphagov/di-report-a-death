@@ -16,7 +16,7 @@
       {{ govukInput({
         id: "national-insurance-number",
         name: "national-insurance-number",
-        value: form['national-insurance-number'] or session['national-insurance-number'],
+        value: (form['national-insurance-number'] or session['national-insurance-number']) | formatNationalInsuranceNumber,
         errorMessage: errors['national-insurance-number'],
         type: "text",
         autocomplete: "false",

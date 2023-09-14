@@ -38,7 +38,7 @@ describe('updateSession', () => {
             ':v2': [OtherPensionProviderOptions.war, OtherPensionProviderOptions.armed],
             ':v3': Date.now(),
         });
-        expect(updateCommand.input.UpdateExpression).toEqual('SET #F0 = :v0, #F2 = :v2, #F3 = :v3, REMOVE #F1');
+        expect(updateCommand.input.UpdateExpression).toEqual('SET #F0 = :v0, #F2 = :v2, #F3 = :v3 REMOVE #F1');
     });
 
     it('allows setting UpdatedAt', () => {

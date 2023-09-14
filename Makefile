@@ -3,7 +3,7 @@ all: assets es-build templates
 assets: install clean-assets fonts images js sass
 
 install: src/package.json
-	cd src; npm i
+	cd src; npm ci
 
 clean-assets:
 	rm -rf assets

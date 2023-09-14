@@ -10,6 +10,26 @@
 
     <h2 class="govuk-heading-m">Pensions for public sector jobs</h2>
 
+    {% set publicSectorPensions %}
+      {% if session['pensions-to-tell'] | length %}
+      {%  for item in session['pensions-to-tell'] %}
+        {{ mappings['publicSectorPensionsMapping'][item] }}<br />
+      {% endfor %}
+      {% else %}
+        None
+      {% endif %}
+    {% endset -%}
+
+    {% set otherPensionProviders %}
+      {% if session['other-pension-providers'] | length %}
+      {% for item in session['other-pension-providers'] %}
+        {{ mappings['OtherPensionProvidersMap'][item] }}<br />
+      {% endfor %}
+      {% else %}
+        None
+      {% endif %}
+    {% endset %}
+
     {{ govukSummaryList({
         classes: 'govuk-!-margin-bottom-9',
         rows: [
@@ -18,14 +38,14 @@
                 text: "National Insurance number"
             },
                 value: {
-                text: answers["nino"]
+                text: session["national-insurance-number"] | formatNationalInsuranceNumber
             },
                 actions: {
                 items: [
                     {
                         href: "/nino",
                         text: "Change",
-                        visuallyHiddenText: "Allows the national insurance number to be changed"
+                        visuallyHiddenText: "national insurance number"
                     }
                 ]
             }
@@ -35,14 +55,14 @@
                 text: "Pensions providers to tell"
             },
                 value: {
-                text: answers['pension-providers']
+                html: publicSectorPensions
             },
                 actions: {
                 items: [
                     {
                         href: "/inform-pension-providers",
                         text: "Change",
-                        visuallyHiddenText: "Allows the pension providers to be informed to be changed"
+                        visuallyHiddenText: "pension providers to tell"
                     }
                 ]
             }
@@ -52,14 +72,14 @@
                 text: "Telling Other Service Pension Providers"
             },
                 value: {
-                text: answers["other-pension-providers"]
+                html: otherPensionProviders
             },
                 actions: {
                 items: [
                     {
                         href: "/other-pension-providers",
                         text: "Change",
-                        visuallyHiddenText: "Allows the other pension providers to be changed"
+                        visuallyHiddenText: "other pension providers to tell"
                     }
                 ]
             }
