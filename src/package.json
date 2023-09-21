@@ -22,6 +22,6 @@
     "eslint-plugin-prettier": "^5.0.0",
     "govuk-frontend": "^4.7.0",
     "prettier": "^3.0.3",
-    "sass": "^1.66.1"
+    "sass": "^1.68.0"
   }
 }
