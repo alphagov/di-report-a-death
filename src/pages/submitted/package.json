@@ -13,7 +13,7 @@
     "nunjucks": "^3.2.4"
   },
   "devDependencies": {
-    "@types/aws-lambda": "^8.10.92",
+    "@types/aws-lambda": "^8.10.122",
     "@types/jest": "^29.5.4",
     "@types/node": "^18.17.15",
     "@types/nunjucks": "^3.2.2",
