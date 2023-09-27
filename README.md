@@ -1,12 +1,14 @@
-# Report a death
+# Report a death  *** Archived ***
 
-Report a death will be a citizen facing service aiming to improve the end-to-end experience of dealing with death and
+This service is now mothballed and archived.
+
+Report a death will be a citizen-facing service aiming to improve the end-to-end experience of dealing with death and
 the government.
 
 ## Overview
 
 Most of the tech used here is very standard across DI. We use Typescript Node lambdas, deployed using SAM. DynamoDB is
-used for persistence. The main difference as compared with most services is that the frontend here is rendered using
+used for persistence. Compared with most services, the main difference is that the frontend here is rendered using
 lambdas.
 
 We're using a lambda per page approach, with a small amount of custom build logic to package the correct templates into
@@ -18,9 +20,9 @@ Architecture decision records start [here](docs/architecture/decisions/0001-use-
 
 ## Running locally
 
-First time setup:
+First-time setup:
 
-- Install latest Node (nvm suggested)
+- Install the latest Node (nvm suggested)
 - Install AWS SAM CLI (`brew install aws-sam-cli`)
 - Install jq (used by scripts/upload-assets.sh, `brew install jq`)
 - Install Docker Desktop
